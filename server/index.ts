@@ -9,9 +9,6 @@ import { settingsRouter } from './routes/settings';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize SQLite database
-initDatabase();
-
 // Middleware
 app.use(cors({
   origin: '*',
@@ -26,7 +23,7 @@ app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'Ahad Qeis Ismail Portfolio CMS Backend',
+    service: 'Ahad Qeis Ismail Portfolio CMS Backend (PostgreSQL)',
   });
 });
 
@@ -38,7 +35,11 @@ app.use('/api/photos', photosRouter);
 app.use('/api/stories', storiesRouter);
 app.use('/api/settings', settingsRouter);
 
-// Start server
+// Initialize PostgreSQL database & start server
+initDatabase().catch((err) => {
+  console.error('[PostgreSQL] Database initialization error:', err);
+});
+
 app.listen(PORT, () => {
   console.log(`[CMS Backend] Server running on http://127.0.0.1:${PORT}`);
 });

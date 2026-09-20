@@ -1,16 +1,18 @@
 import { Router, Request, Response } from 'express';
-import { db } from '../db';
+import { pool, ensureInitialized } from '../db';
 import { requireAuth } from '../auth';
 import { parseGoogleDriveLink } from '../utils/driveParser';
 
 export const photosRouter = Router();
 
 // GET all photos (public)
-photosRouter.get('/', (_req: Request, res: Response) => {
+photosRouter.get('/', async (_req: Request, res: Response) => {
   try {
-    const rows = db.prepare('SELECT * FROM photos ORDER BY sort_order ASC, created_at DESC').all() as any[];
+    await ensureInitialized();
+    const result = await pool.query('SELECT * FROM photos ORDER BY sort_order ASC, created_at DESC');
+    const rows = result.rows;
 
-    const photos = rows.map((r) => ({
+    const photos = rows.map((r: any) => ({
       id: r.id,
       imageUrl: r.image_url,
       driveFileId: r.drive_file_id,
@@ -33,13 +35,14 @@ photosRouter.get('/', (_req: Request, res: Response) => {
 
     res.json({ success: true, data: photos });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Database query failed' });
   }
 });
 
 // POST new photo (protected)
-photosRouter.post('/', requireAuth, (req: Request, res: Response) => {
+photosRouter.post('/', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureInitialized();
     const rawUrl = req.body.imageUrl || req.body.driveUrl || req.body.url;
 
     if (!rawUrl) {
@@ -69,13 +72,14 @@ photosRouter.post('/', requireAuth, (req: Request, res: Response) => {
     const iso = req.body.iso || exifObj.iso || null;
     const focalLength = req.body.focalLength || exifObj.focalLength || null;
 
-    const insert = db.prepare(`
+    const query = `
       INSERT INTO photos (
         id, image_url, drive_file_id, title, subtitle, location, year, camera, lens, aperture, shutter_speed, iso, focal_length, sort_order
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING *
+    `;
 
-    insert.run(
+    await pool.query(query, [
       id,
       finalImageUrl,
       driveFileId,
@@ -89,8 +93,8 @@ photosRouter.post('/', requireAuth, (req: Request, res: Response) => {
       shutterSpeed,
       iso,
       focalLength,
-      nextOrder
-    );
+      nextOrder,
+    ]);
 
     res.json({
       success: true,
@@ -114,13 +118,14 @@ photosRouter.post('/', requireAuth, (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Failed to insert photo' });
   }
 });
 
 // PUT update photo (protected)
-photosRouter.put('/:id', requireAuth, (req: Request, res: Response) => {
+photosRouter.put('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureInitialized();
     const { id } = req.params;
     const rawUrl = req.body.imageUrl || req.body.driveUrl || req.body.url;
 
@@ -141,26 +146,27 @@ photosRouter.put('/:id', requireAuth, (req: Request, res: Response) => {
     const iso = req.body.iso !== undefined ? req.body.iso : exifObj.iso;
     const focalLength = req.body.focalLength !== undefined ? req.body.focalLength : exifObj.focalLength;
 
-    const update = db.prepare(`
+    const query = `
       UPDATE photos
       SET 
-        image_url = COALESCE(?, image_url),
-        drive_file_id = COALESCE(?, drive_file_id),
-        title = ?,
-        subtitle = ?,
-        location = ?,
-        year = ?,
-        camera = ?,
-        lens = ?,
-        aperture = ?,
-        shutter_speed = ?,
-        iso = ?,
-        focal_length = ?,
-        sort_order = COALESCE(?, sort_order)
-      WHERE id = ?
-    `);
+        image_url = COALESCE($1, image_url),
+        drive_file_id = COALESCE($2, drive_file_id),
+        title = $3,
+        subtitle = $4,
+        location = $5,
+        year = $6,
+        camera = $7,
+        lens = $8,
+        aperture = $9,
+        shutter_speed = $10,
+        iso = $11,
+        focal_length = $12,
+        sort_order = COALESCE($13, sort_order)
+      WHERE id = $14
+      RETURNING *
+    `;
 
-    update.run(
+    const result = await pool.query(query, [
       finalImageUrl || null,
       driveFileId,
       req.body.title ? req.body.title.trim() : null,
@@ -173,29 +179,35 @@ photosRouter.put('/:id', requireAuth, (req: Request, res: Response) => {
       shutterSpeed ? shutterSpeed.trim() : null,
       iso ? iso.trim() : null,
       focalLength ? focalLength.trim() : null,
-      req.body.sortOrder,
-      id
-    );
+      req.body.sortOrder !== undefined ? req.body.sortOrder : null,
+      id,
+    ]);
+
+    if (result.rowCount === 0) {
+      res.status(404).json({ success: false, message: 'Photo not found' });
+      return;
+    }
 
     res.json({ success: true, message: 'Photo updated successfully' });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Failed to update photo' });
   }
 });
 
 // DELETE photo (protected)
-photosRouter.delete('/:id', requireAuth, (req: Request, res: Response) => {
+photosRouter.delete('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureInitialized();
     const { id } = req.params;
-    const result = db.prepare('DELETE FROM photos WHERE id = ?').run(id);
+    const result = await pool.query('DELETE FROM photos WHERE id = $1', [id]);
 
-    if (result.changes === 0) {
+    if (result.rowCount === 0) {
       res.status(404).json({ success: false, message: 'Photo not found' });
       return;
     }
 
     res.json({ success: true, message: 'Photo deleted successfully' });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Failed to delete photo' });
   }
 });

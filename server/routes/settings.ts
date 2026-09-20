@@ -1,33 +1,30 @@
 import { Router, Request, Response } from 'express';
-import { db } from '../db';
+import { pool, ensureInitialized } from '../db';
 import { requireAuth } from '../auth';
 import { parseGoogleDriveLink } from '../utils/driveParser';
 
 export const settingsRouter = Router();
 
 // GET settings (public)
-settingsRouter.get('/', (_req: Request, res: Response) => {
+settingsRouter.get('/', async (_req: Request, res: Response) => {
   try {
-    const rows = db.prepare('SELECT * FROM settings').all() as { key: string; value: string }[];
+    await ensureInitialized();
+    const result = await pool.query('SELECT key, value FROM settings');
     const settings: Record<string, string> = {};
-    for (const r of rows) {
+    for (const r of result.rows) {
       settings[r.key] = r.value;
     }
     res.json({ success: true, data: settings });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Database query failed' });
   }
 });
 
 // PUT update settings (protected)
-settingsRouter.put('/', requireAuth, (req: Request, res: Response) => {
+settingsRouter.put('/', requireAuth, async (req: Request, res: Response) => {
   try {
+    await ensureInitialized();
     const updates = req.body as Record<string, string>;
-
-    const upsert = db.prepare(`
-      INSERT INTO settings (key, value) VALUES (?, ?)
-      ON CONFLICT(key) DO UPDATE SET value = excluded.value
-    `);
 
     const imageKeys = [
       'heroImageUrl',
@@ -41,22 +38,32 @@ settingsRouter.put('/', requireAuth, (req: Request, res: Response) => {
       'igPhoto5',
     ];
 
-    const updateMany = db.transaction((entries: [string, string][]) => {
-      for (const [key, value] of entries) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const [key, value] of Object.entries(updates)) {
         let finalValue = value ? String(value).trim() : '';
-        // If it's an image key and contains a Drive link, resolve to high-speed CDN stream
+        // If it's an image key and contains a Drive link, resolve to direct stream URL
         if (imageKeys.includes(key) && finalValue) {
           const parsed = parseGoogleDriveLink(finalValue);
           finalValue = parsed.directUrl;
         }
-        upsert.run(key, finalValue);
+        await client.query(`
+          INSERT INTO settings (key, value)
+          VALUES ($1, $2)
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+        `, [key, finalValue]);
       }
-    });
-
-    updateMany(Object.entries(updates));
+      await client.query('COMMIT');
+    } catch (txError) {
+      await client.query('ROLLBACK');
+      throw txError;
+    } finally {
+      client.release();
+    }
 
     res.json({ success: true, message: 'Settings updated successfully' });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message || 'Failed to update settings' });
   }
 });
