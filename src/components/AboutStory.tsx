@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera, MapPin, Award, X, CheckCircle2 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { PHOTOGRAPHER_STATS } from '../data/stats';
+import { SmoothImage } from './SmoothImage';
 import type { SiteSettings } from '../types';
 
 interface AboutStoryProps {
@@ -9,9 +9,10 @@ interface AboutStoryProps {
   photo2?: string;
   photo3?: string;
   settings?: SiteSettings | null;
+  isLoading?: boolean;
 }
 
-export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, settings }) => {
+export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, settings, isLoading }) => {
   const [bioModalOpen, setBioModalOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -64,7 +65,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
           pointerEvents: 'none',
         }}
       >
-        Storyteller. Dreamer. Explorer.
+        Street. Candid. Authentic.
       </motion.div>
 
       <div className="container">
@@ -129,7 +130,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               className="about-photo-card"
             >
               {activePhoto1 ? (
-                <img
+                <SmoothImage
                   src={activePhoto1}
                   alt="Photographer Main Portrait"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -139,18 +140,12 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   style={{
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'var(--surface-subtle)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    color: 'var(--text-tertiary)',
+                    backgroundColor: 'var(--surface-dark, #1E1F24)',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(229,169,30,0.08) 50%, rgba(255,255,255,0.02) 100%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'skeletonPulse 1.6s infinite ease-in-out',
                   }}
-                >
-                  <Camera size={28} strokeWidth={1.5} />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Foto Utama Profile</span>
-                </div>
+                />
               )}
             </motion.div>
 
@@ -177,7 +172,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               className="about-photo-card"
             >
               {activePhoto2 ? (
-                <img
+                <SmoothImage
                   src={activePhoto2}
                   alt="Adventure landscape explorer"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -187,18 +182,12 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   style={{
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'var(--surface-subtle)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    color: 'var(--text-tertiary)',
+                    backgroundColor: 'var(--surface-dark, #1E1F24)',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(229,169,30,0.08) 50%, rgba(255,255,255,0.02) 100%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'skeletonPulse 1.6s infinite ease-in-out',
                   }}
-                >
-                  <MapPin size={24} strokeWidth={1.5} />
-                  <span style={{ fontSize: '0.6875rem', fontWeight: 600 }}>Foto Lapangan</span>
-                </div>
+                />
               )}
             </motion.div>
 
@@ -225,7 +214,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               className="about-photo-card"
             >
               {activePhoto3 ? (
-                <img
+                <SmoothImage
                   src={activePhoto3}
                   alt="Artistic portrait of photographer"
                   style={{
@@ -240,18 +229,12 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   style={{
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'var(--surface-subtle)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    color: 'var(--text-tertiary)',
+                    backgroundColor: 'var(--surface-dark, #1E1F24)',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(229,169,30,0.08) 50%, rgba(255,255,255,0.02) 100%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'skeletonPulse 1.6s infinite ease-in-out',
                   }}
-                >
-                  <Camera size={26} strokeWidth={1.5} />
-                  <span style={{ fontSize: '0.6875rem', fontWeight: 600 }}>Foto B&W Artistik</span>
-                </div>
+                />
               )}
             </motion.div>
 
@@ -335,7 +318,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              {settings?.fullName || 'Ahad Qeis'}
+              {settings?.fullName || ''}
             </motion.div>
           </div>
 
@@ -374,7 +357,23 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                 marginBottom: 'var(--space-2)',
               }}
             >
-              {settings?.fullName ? `HI, I'M ${settings.fullName.toUpperCase()}` : "HI, I'M AHAD QEIS"}
+              {isLoading ? (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '240px',
+                    height: '36px',
+                    borderRadius: '6px',
+                    background: 'linear-gradient(90deg, rgba(229,169,30,0.08) 0%, rgba(229,169,30,0.2) 50%, rgba(229,169,30,0.08) 100%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'shimmer 1.5s infinite',
+                  }}
+                />
+              ) : settings?.fullName ? (
+                `HI, I'M ${settings.fullName.toUpperCase()}`
+              ) : (
+                'ABOUT THE ARTIST'
+              )}
             </h2>
 
             {/* Subtle Divider Line */}
@@ -400,70 +399,109 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                 marginBottom: 'var(--space-8)',
               }}
             >
-              {settings?.bio || "Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people."}
+              {settings?.bio || ''}
             </p>
 
-            {/* 3 Metric Counters matching reference */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 'var(--space-4)',
-                paddingTop: 'var(--space-6)',
-                paddingBottom: 'var(--space-8)',
-                borderTop: '1px solid var(--border-subtle)',
-                borderBottom: '1px solid var(--border-subtle)',
-                marginBottom: 'var(--space-8)',
-              }}
-            >
-              {PHOTOGRAPHER_STATS.map((stat, i) => (
-                <motion.div
-                  key={stat.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
-                  style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}
+            {/* 3 Metric Counters — 100% from DB settings (statYears, statCountries, statAwards) */}
+            {(() => {
+              const dbStats = [
+                {
+                  id: 'stat-exp',
+                  value: settings?.statYears || '—',
+                  label: 'Years Shooting',
+                  icon: 'camera' as const,
+                },
+                {
+                  id: 'stat-countries',
+                  value: settings?.statCountries || '—',
+                  label: 'Photos in Portfolio',
+                  icon: 'globe' as const,
+                },
+                {
+                  id: 'stat-awards',
+                  value: settings?.statAwards || '—',
+                  label: 'Projects Done',
+                  icon: 'award' as const,
+                },
+              ];
+              return (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: 'var(--space-4)',
+                    paddingTop: 'var(--space-6)',
+                    paddingBottom: 'var(--space-8)',
+                    borderTop: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    marginBottom: 'var(--space-8)',
+                  }}
                 >
-                  <div
-                    style={{
-                      color: 'var(--accent-gold-dark)',
-                      marginTop: '3px',
-                    }}
-                  >
-                    {stat.icon === 'camera' && <Camera size={22} strokeWidth={1.8} />}
-                    {stat.icon === 'globe' && <MapPin size={22} strokeWidth={1.8} />}
-                    {stat.icon === 'award' && <Award size={22} strokeWidth={1.8} />}
-                  </div>
+                  {dbStats.map((stat, i) => (
+                    <motion.div
+                      key={stat.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}
+                    >
+                      <div
+                        style={{
+                          color: 'var(--accent-gold-dark)',
+                          marginTop: '3px',
+                        }}
+                      >
+                        {stat.icon === 'camera' && <Camera size={22} strokeWidth={1.8} />}
+                        {stat.icon === 'globe' && <MapPin size={22} strokeWidth={1.8} />}
+                        {stat.icon === 'award' && <Award size={22} strokeWidth={1.8} />}
+                      </div>
 
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '1.625rem',
-                        fontWeight: 800,
-                        lineHeight: 1,
-                        color: 'var(--text-primary)',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.75rem',
-                        color: 'var(--text-muted)',
-                        lineHeight: 1.25,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {stat.label}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                      <div>
+                        {isLoading ? (
+                          <div
+                            style={{
+                              height: '24px',
+                              width: '50px',
+                              backgroundColor: 'rgba(229,169,30,0.1)',
+                              borderRadius: '4px',
+                              marginBottom: '6px',
+                              background: 'linear-gradient(90deg, rgba(229,169,30,0.06) 0%, rgba(229,169,30,0.18) 50%, rgba(229,169,30,0.06) 100%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'skeletonPulse 1.6s infinite ease-in-out',
+                            }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              fontFamily: 'var(--font-display)',
+                              fontSize: '1.625rem',
+                              fontWeight: 800,
+                              lineHeight: 1,
+                              color: 'var(--text-primary)',
+                              marginBottom: '4px',
+                            }}
+                          >
+                            {stat.value}
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            fontSize: '0.75rem',
+                            color: 'var(--text-muted)',
+                            lineHeight: 1.25,
+                            fontWeight: 500,
+                          }}
+                        >
+                          {stat.label}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })()}
 
             {/* Editorial Button */}
             <motion.button
@@ -544,7 +582,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   textTransform: 'uppercase',
                 }}
               >
-                Photographer & Director
+                Street Photographer — Bandung
               </span>
               <h3
                 style={{
@@ -554,11 +592,11 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   marginBottom: 'var(--space-4)',
                 }}
               >
-                The Visual Philosophy of Ahad Qeis Ismail
+                {settings?.fullName ? `The Frame of ${settings.fullName}` : 'The Frame'}
               </h3>
 
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-4)' }}>
-                Over the last 12 years, I have journeyed across 28 countries, documenting remote landscapes and raw human encounters. My philosophy is anchored in deep observation rather than rapid staging. Light is organic; patience is the lens.
+                {settings?.bio || 'Capturing the unscripted moments of Bandung streets and beyond. The best frame happens in a fraction of a second — honest expressions, light that forms itself, and moments that will never repeat.'}
               </p>
 
               <h4
@@ -571,17 +609,17 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   color: 'var(--text-primary)',
                 }}
               >
-                Current Primary Gear Kit
+                Gear Kit
               </h4>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
                 {[
-                  'Sony Alpha 1 & A7R V Mirrorless Bodies',
-                  'Sony G Master Primes: 35mm, 50mm, 85mm f/1.4',
-                  'Hasselblad X2D 100C Medium Format',
-                  'Gitzo Mountaineer Carbon Fiber Tripods',
-                  'Profoto B10X Plus Location Lighting',
-                  'DJI Mavic 3 Pro Cine Drone',
+                  'Sony Alpha A6400 — Primary Body',
+                  'Sony E 35mm f/1.8 OSS — Street Staple',
+                  'Sony E 18-135mm f/3.5-5.6 OSS',
+                  'Sony E 50mm f/1.8 OSS — Portrait',
+                  'Peak Design Clip — Run and Gun',
+                  'Lightroom Classic — Post Processing',
                 ].map((gear, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                     <CheckCircle2 size={16} color="var(--accent-gold-dark)" />

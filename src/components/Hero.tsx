@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { InstagramIcon, YoutubeIcon, TwitterIcon, FacebookIcon } from './Icons';
+import { SmoothImage } from './SmoothImage';
 import type { SiteSettings } from '../types';
 
 interface HeroProps {
@@ -9,9 +10,10 @@ interface HeroProps {
   onReadStories: () => void;
   heroImageUrl?: string;
   settings?: SiteSettings | null;
+  isLoading?: boolean;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, heroImageUrl, settings }) => {
+export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, heroImageUrl, settings, isLoading }) => {
   const containerRef = useRef<HTMLElement>(null);
 
   // Parallax scroll controls for background lake & dock image
@@ -54,7 +56,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
         }}
       >
         {activeHeroImage ? (
-          <img
+          <SmoothImage
             src={activeHeroImage}
             alt="Hero Background Scenic View"
             style={{
@@ -107,7 +109,11 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
         }}
       >
         {[
-          { icon: InstagramIcon, href: settings?.instagramUrl || 'https://instagram.com/amdqeis__', label: 'Instagram' },
+          {
+            icon: InstagramIcon,
+            href: settings?.instagramUrl || (settings?.instagram ? `https://instagram.com/${settings.instagram.replace('@', '')}` : 'https://instagram.com'),
+            label: 'Instagram',
+          },
           { icon: YoutubeIcon, href: 'https://youtube.com', label: 'YouTube' },
           { icon: TwitterIcon, href: 'https://twitter.com', label: 'Twitter' },
           { icon: FacebookIcon, href: 'https://facebook.com', label: 'Facebook' },
@@ -170,18 +176,32 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
                 backgroundColor: 'var(--accent-gold)',
               }}
             />
-            <span
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '0.8125rem',
-                fontWeight: 700,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              {settings?.eyebrow || "HEY, I'M AHAD QEIS"}
-            </span>
+            {isLoading ? (
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '140px',
+                  height: '14px',
+                  borderRadius: '3px',
+                  background: 'linear-gradient(90deg, rgba(229,169,30,0.1) 0%, rgba(229,169,30,0.25) 50%, rgba(229,169,30,0.1) 100%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                }}
+              />
+            ) : settings?.eyebrow ? (
+              <span
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                {settings.eyebrow}
+              </span>
+            ) : null}
           </motion.div>
 
           {/* Heading Display */}
@@ -197,7 +217,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               whiteSpace: 'pre-line',
             }}
           >
-            {settings?.tagline || 'CAPTURING\nREAL MOMENTS'}
+            {settings?.tagline || 'PORTFOLIO &\nVISUAL STORIES'}
           </motion.h1>
 
           {/* Narrative Subtitle */}
@@ -214,7 +234,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               fontWeight: 400,
             }}
           >
-            {settings?.bio || "I'm a professional photographer and storyteller. I capture moments, emotions and the beauty in everything around us."}
+            {settings?.bio || ''}
           </motion.p>
 
           {/* Dual Action Buttons */}
@@ -249,7 +269,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.15 }}
             >
-              READ STORIES
+              ABOUT ME
             </motion.button>
           </motion.div>
         </div>
@@ -305,26 +325,28 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               textShadow: '0 1px 6px rgba(0,0,0,0.7)',
             }}
           >
-            CAPE TOWN, SOUTH AFRICA
+            {settings?.location ? settings.location.toUpperCase() : 'LOCATION NOT SET'}
           </div>
 
           {/* Golden Script Signature matching reference */}
-          <motion.div
-            className="font-script"
-            initial={{ opacity: 0, rotate: -8, scale: 0.9 }}
-            animate={{ opacity: 1, rotate: -4, scale: 1 }}
-            transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontSize: '3.75rem',
-              color: 'var(--accent-gold)',
-              lineHeight: 0.9,
-              marginTop: '4px',
-              userSelect: 'none',
-              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-            }}
-          >
-            Ahad Qeis
-          </motion.div>
+          {(settings?.fullName || settings?.brandName) && (
+            <motion.div
+              className="font-script"
+              initial={{ opacity: 0, rotate: -8, scale: 0.9 }}
+              animate={{ opacity: 1, rotate: -4, scale: 1 }}
+              transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontSize: '3.75rem',
+                color: 'var(--accent-gold)',
+                lineHeight: 0.9,
+                marginTop: '4px',
+                userSelect: 'none',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
+              }}
+            >
+              {settings.fullName || settings.brandName}
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
 

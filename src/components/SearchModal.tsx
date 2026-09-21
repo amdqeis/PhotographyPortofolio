@@ -210,6 +210,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                               <img
                                 src={photo.imageUrl}
                                 alt={photo.title || 'Photo capture'}
+                                referrerPolicy="no-referrer"
                                 style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '3px' }}
                               />
                               <div>
@@ -271,6 +272,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                             <img
                               src={story.coverImage}
                               alt={story.title}
+                              referrerPolicy="no-referrer"
                               style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '3px' }}
                             />
                             <div>

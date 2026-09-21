@@ -265,6 +265,7 @@ export const PhotoFormModal: React.FC<PhotoFormModalProps> = ({
                   <img
                     src={previewUrl}
                     alt="Live preview"
+                    referrerPolicy="no-referrer"
                     style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
                     onError={() => {
                       setError('Could not load image preview. Ensure the Google Drive file is set to "Anyone with the link can view".');
@@ -301,7 +302,7 @@ export const PhotoFormModal: React.FC<PhotoFormModalProps> = ({
                   Caption & Title (Optional)
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 'var(--space-3)' }}>
-                  Jika dikosongkan, foto akan tampil dalam <strong>mode murni foto</strong> tanpa teks/badge kosong.
+                  If left empty, the photo will display in <strong>pure photo mode</strong> with no empty text/badges.
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>

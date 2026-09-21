@@ -1,10 +1,13 @@
 import React from 'react';
 import { ArrowRight, Maximize2, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { GallerySkeleton } from './SkeletonLoader';
+import { SmoothImage } from './SmoothImage';
 import type { Photo } from '../types';
 
 interface WorkGalleryProps {
   photos: Photo[];
+  isLoading?: boolean;
   onSelectPhoto: (photo: Photo, index: number) => void;
 }
 
@@ -31,7 +34,7 @@ const cardVariants = {
   },
 };
 
-export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto }) => {
+export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto, isLoading }) => {
   return (
     <section
       id="portfolio"
@@ -59,7 +62,7 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto 
               transition={{ duration: 0.5, delay: 0.1 }}
               style={{ transformOrigin: 'left' }}
             />
-            <h2 className="heading-section">EXPLORE MY WORK</h2>
+            <h2 className="heading-section">MY GALLERY</h2>
           </div>
 
           {photos.length > 0 && (
@@ -72,7 +75,7 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto 
                 onSelectPhoto(photos[0], 0);
               }}
             >
-              <span>VIEW ALL PORTFOLIO</span>
+              <span>VIEW ALL PHOTOS</span>
               <span className="section-link-badge">
                 <ArrowRight size={13} strokeWidth={2.5} />
               </span>
@@ -80,7 +83,9 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto 
           )}
         </motion.div>
 
-        {photos.length === 0 ? (
+        {isLoading ? (
+          <GallerySkeleton />
+        ) : photos.length === 0 ? (
           <div
             style={{
               textAlign: 'center',
@@ -117,10 +122,10 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto 
                 marginBottom: '8px',
               }}
             >
-              Portfolio Siap Diisi Foto
+              Portfolio Ready to Fill
             </h3>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: '440px', margin: '0 auto' }}>
-              Database foto saat ini telah dikosongkan. Buka <strong>/admin</strong> untuk menambahkan foto karya Anda langsung dari link Google Drive.
+              The photo database is currently empty. Go to <strong>/admin</strong> to add your photos directly from a Google Drive link.
             </p>
           </div>
         ) : (
@@ -166,18 +171,16 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto 
                   }
                 }}
               >
-                {/* Photo Image */}
-                <img
+                {/* Photo Image with Progressive Smooth Fade-in */}
+                <SmoothImage
                   src={photo.imageUrl}
                   alt={photo.title || 'Portfolio Photography'}
-                  loading="lazy"
+                  className="gallery-card-img"
                   style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    transition: 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms ease',
                   }}
-                  className="gallery-card-img"
                 />
 
                 {/* Adaptive Overlay: Displays elegant title/subtitle if present, or pure clean hover vignette if no caption */}

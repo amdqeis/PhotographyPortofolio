@@ -1,0 +1,38 @@
+# Dev dependencies & generated files — not needed in the image
+node_modules
+dist
+dist-server
+dist-ssr
+
+# Environment & secrets — never bake into image
+.env
+.env.*
+!.env.example
+
+# Version control
+.git
+.gitignore
+
+# Editor files
+.vscode
+.idea
+*.suo
+*.sw?
+*.DS_Store
+
+# Logs
+logs
+*.log
+
+# SQLite remnants (project uses PostgreSQL)
+*.db
+*.db-shm
+*.db-wal
+
+# Docker files themselves
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Test & lint artifacts
+coverage

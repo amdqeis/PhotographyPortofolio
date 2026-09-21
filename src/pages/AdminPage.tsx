@@ -49,16 +49,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>({
-    fullName: 'Ahad Qeis Ismail',
-    brandName: 'AHAD QEIS',
-    tagline: 'CAPTURING REAL MOMENTS',
-    eyebrow: "HEY, I'M AHAD QEIS",
-    bio: "Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people.",
-    email: 'ahmad.qeis122@gmail.com',
-    phone: '081934193454',
-    instagram: '@amdqeis__',
-    instagramUrl: 'https://instagram.com/amdqeis__',
-    location: 'Indonesia',
+    fullName: '',
+    brandName: '',
+    tagline: '',
+    eyebrow: '',
+    bio: '',
+    email: '',
+    phone: '',
+    instagram: '',
+    instagramUrl: '',
+    location: '',
     heroImageUrl: '',
     aboutPhoto1: '',
     aboutPhoto2: '',
@@ -76,11 +76,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   // Toast notifications
-  const [toast, setToast] = useState<{ title: string; message: string } | null>(null);
+  const [toast, setToast] = useState<{ title: string; message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (title: string, message: string) => {
-    setToast({ title, message });
-    setTimeout(() => setToast(null), 3500);
+    const type = title.startsWith('❌') ? 'error' : 'success';
+    setToast({ title, message, type });
+    setTimeout(() => setToast(null), type === 'error' ? 5000 : 3500);
   };
 
   // Fetch all CMS data from backend
@@ -128,7 +129,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         localStorage.setItem('cms_token', res.token);
         setIsAuthenticated(true);
         setPassword('');
-        showToast('Authenticated', 'Welcome back, Ahad Qeis Ismail.');
+        showToast('Authenticated', 'Welcome back to Studio CMS.');
       } else {
         setLoginError(res.message || 'Invalid key password.');
       }
@@ -148,58 +149,98 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Photo handlers
   const handleSavePhoto = async (photoData: Partial<Photo>) => {
-    if (selectedPhotoToEdit) {
-      await api.updatePhoto(selectedPhotoToEdit.id, photoData);
-      showToast('Photo Updated', 'Portfolio photo updated successfully.');
-    } else {
-      await api.createPhoto(photoData);
-      showToast('Photo Published', 'New Google Drive photo linked to portfolio.');
+    try {
+      if (selectedPhotoToEdit) {
+        const res = await api.updatePhoto(selectedPhotoToEdit.id, photoData);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to update photo in the database.');
+        }
+        showToast('Photo Updated', 'Portfolio photo updated successfully.');
+      } else {
+        const res = await api.createPhoto(photoData);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to save photo to the database.');
+        }
+        showToast('Photo Published', 'New Google Drive photo linked to portfolio.');
+      }
+      await loadData();
+    } catch (err: any) {
+      showToast('❌ DB Error', err.message || 'Failed to save photo. Check server connection.');
+      throw err; // re-throw so PhotoFormModal can show inline error too
     }
-    loadData();
   };
 
   const handleDeletePhoto = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this photo from the portfolio?')) {
-      await api.deletePhoto(id);
-      showToast('Photo Removed', 'The photo was removed.');
-      loadData();
+      try {
+        const res = await api.deletePhoto(id);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to delete photo from the database.');
+        }
+        showToast('Photo Removed', 'The photo was removed from the database.');
+        await loadData();
+      } catch (err: any) {
+        showToast('❌ DB Error', err.message || 'Failed to delete photo. Check server connection.');
+      }
     }
   };
 
   // Story handlers
   const handleSaveStory = async (storyData: Partial<Story>) => {
-    if (selectedStoryToEdit) {
-      await api.updateStory(selectedStoryToEdit.id, storyData);
-      showToast('Story Updated', 'Field story updated successfully.');
-    } else {
-      await api.createStory(storyData);
-      showToast('Story Published', 'New field story published.');
+    try {
+      if (selectedStoryToEdit) {
+        const res = await api.updateStory(selectedStoryToEdit.id, storyData);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to update story in the database.');
+        }
+        showToast('Story Updated', 'Field story updated successfully.');
+      } else {
+        const res = await api.createStory(storyData);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to save story to the database.');
+        }
+        showToast('Story Published', 'New field story published.');
+      }
+      await loadData();
+    } catch (err: any) {
+      showToast('❌ DB Error', err.message || 'Failed to save story. Check server connection.');
+      throw err;
     }
-    loadData();
   };
 
   const handleDeleteStory = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this story?')) {
-      await api.deleteStory(id);
-      showToast('Story Deleted', 'The story was deleted.');
-      loadData();
+      try {
+        const res = await api.deleteStory(id);
+        if (!res.success) {
+          throw new Error(res.message || 'Failed to delete story from the database.');
+        }
+        showToast('Story Deleted', 'The story was deleted from the database.');
+        await loadData();
+      } catch (err: any) {
+        showToast('❌ DB Error', err.message || 'Failed to delete story. Check server connection.');
+      }
     }
   };
 
-  // Settings handlers
+  // Settings handler
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingSettings(true);
     try {
-      await api.updateSettings(settingsForm);
-      showToast('Settings Saved', 'Site configuration and contact info updated live.');
-      loadData();
-    } catch {
-      showToast('Error', 'Failed to update settings.');
+      const res = await api.updateSettings(settingsForm);
+      if (!res.success) {
+        throw new Error(res.message || 'Server rejected the settings changes.');
+      }
+      showToast('Settings Saved', 'Site configuration saved to database successfully.');
+      await loadData();
+    } catch (err: any) {
+      showToast('❌ DB Error', err.message || 'Failed to save settings. Check database connection.');
     } finally {
       setIsSavingSettings(false);
     }
   };
+
 
   // -------------------------------------------------------------
   // 1. RENDER LOGIN SCREEN (If not authenticated)
@@ -302,7 +343,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: '#FFFFFF',
               }}
             >
-              AHAD QEIS ISMAIL
+              {_settings?.brandName || _settings?.fullName || 'STUDIO CMS'}
             </h1>
             <p
               style={{
@@ -425,7 +466,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               color: '#71717A',
             }}
           >
-            Ahad Qeis Ismail Content Management System
+            {_settings?.fullName ? `${_settings.fullName} Content Management System` : 'Portfolio Content Management System'}
           </div>
         </motion.div>
       </div>
@@ -471,7 +512,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: 'var(--text-primary)',
               }}
             >
-              AHAD QEIS ISMAIL
+              {_settings?.brandName || _settings?.fullName || 'STUDIO CMS'}
             </div>
             <div
               style={{
@@ -739,6 +780,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <img
                         src={photo.imageUrl}
                         alt={photo.title || 'Portfolio item'}
+                        referrerPolicy="no-referrer"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                       <div
@@ -881,6 +923,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <img
                     src={story.coverImage}
                     alt={story.title}
+                    referrerPolicy="no-referrer"
                     style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
                   />
                   <div>
@@ -1021,6 +1064,44 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
+                  Hero Eyebrow Text
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. HEY, I'M AHMAD QEIS"
+                  value={settingsForm.eyebrow || ''}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, eyebrow: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-medium)',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
+                  Hero Tagline / Headline
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. CAPTURING REAL MOMENTS"
+                  value={settingsForm.tagline || ''}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, tagline: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-medium)',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
                   Email Address
                 </label>
                 <input
@@ -1109,6 +1190,83 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               />
             </div>
 
+            {/* Photographer Stats — from DB, displayed in About section */}
+            <div
+              style={{
+                marginBottom: '28px',
+                backgroundColor: 'rgba(229, 169, 30, 0.06)',
+                border: '1px solid rgba(229, 169, 30, 0.2)',
+                borderRadius: '10px',
+                padding: '18px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <CheckCircle size={18} color="var(--accent-gold-dark)" />
+                <h4 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '0.9375rem', margin: 0, color: 'var(--text-primary)' }}>
+                  Photographer Stats (About Section)
+                </h4>
+              </div>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
+                Data ini tampil di section <strong>About</strong> homepage. Isi sesuai pengalaman dan pencapaian nyata — diambil langsung dari database.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
+                    Years Experience
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 12+"
+                    value={settingsForm.statYears || ''}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, statYears: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-medium)',
+                      fontSize: '0.875rem',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
+                    Countries Explored
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 28"
+                    value={settingsForm.statCountries || ''}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, statCountries: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-medium)',
+                      fontSize: '0.875rem',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
+                    Awards Won
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 100+"
+                    value={settingsForm.statAwards || ''}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, statAwards: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-medium)',
+                      fontSize: '0.875rem',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* EDITORIAL & SECTION IMAGERY (CMS DRIVEN) */}
             <div
               style={{
@@ -1133,7 +1291,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 </h3>
               </div>
               <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: 1.5 }}>
-                Semua foto utama website (Hero background & 3 foto profil collage) dikontrol penuh lewat CMS ini. Masukkan <strong>Link Google Drive publik</strong> (Share &rarr; Anyone with the link &rarr; Viewer) atau URL gambar langsung. Sistem otomatis mengalirkan CDN berkecepatan tinggi tanpa menyimpan file di server.
+                All main website images (Hero background & 3 profile collage photos) are fully managed through this CMS. Enter a <strong>public Google Drive link</strong> (Share &rarr; Anyone with the link &rarr; Viewer) or a direct image URL. The system automatically streams via a high-speed CDN without storing files on the server.
               </p>
 
               {/* 1. Hero Section Image */}
@@ -1187,6 +1345,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <img
                       src={parseGoogleDriveLink(settingsForm.heroImageUrl).directUrl}
                       alt="Hero Live Preview"
+                      referrerPolicy="no-referrer"
                       style={{
                         width: '140px',
                         height: '78px',
@@ -1229,18 +1388,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <label style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        2. About: Foto Utama (Explorer)
+                        2. About: Main Photo (Explorer)
                       </label>
                       {settingsForm.aboutPhoto1 && parseGoogleDriveLink(settingsForm.aboutPhoto1).isDriveLink && (
                         <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#16A34A' }}>Drive OK</span>
                       )}
                     </div>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                      Foto potret fotografer dengan kamera di collage About.
+                      Portrait photo of the photographer with camera in the About collage.
                     </p>
                     <input
                       type="text"
-                      placeholder="Link Google Drive foto 1..."
+                      placeholder="Google Drive link for photo 1..."
                       value={settingsForm.aboutPhoto1 || ''}
                       onChange={(e) => setSettingsForm({ ...settingsForm, aboutPhoto1: e.target.value })}
                       style={{
@@ -1258,6 +1417,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <img
                         src={parseGoogleDriveLink(settingsForm.aboutPhoto1).directUrl}
                         alt="About Photo 1 Preview"
+                        referrerPolicy="no-referrer"
                         style={{
                           width: '100%',
                           height: '120px',
@@ -1288,18 +1448,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <label style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        3. About: Foto Lapangan
+                        3. About: Field Photo
                       </label>
                       {settingsForm.aboutPhoto2 && parseGoogleDriveLink(settingsForm.aboutPhoto2).isDriveLink && (
                         <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#16A34A' }}>Drive OK</span>
                       )}
                     </div>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                      Foto tebing / aksi lapangan di collage About.
+                      Cliff / field action photo in the About collage.
                     </p>
                     <input
                       type="text"
-                      placeholder="Link Google Drive foto 2..."
+                      placeholder="Google Drive link for photo 2..."
                       value={settingsForm.aboutPhoto2 || ''}
                       onChange={(e) => setSettingsForm({ ...settingsForm, aboutPhoto2: e.target.value })}
                       style={{
@@ -1317,6 +1477,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <img
                         src={parseGoogleDriveLink(settingsForm.aboutPhoto2).directUrl}
                         alt="About Photo 2 Preview"
+                        referrerPolicy="no-referrer"
                         style={{
                           width: '100%',
                           height: '120px',
@@ -1347,18 +1508,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <label style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        4. About: Foto B&W Artistik
+                        4. About: Artistic B&W Photo
                       </label>
                       {settingsForm.aboutPhoto3 && parseGoogleDriveLink(settingsForm.aboutPhoto3).isDriveLink && (
                         <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#16A34A' }}>Drive OK</span>
                       )}
                     </div>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                      Foto potret close-up / artistik hitam putih.
+                      Close-up / artistic black and white portrait photo.
                     </p>
                     <input
                       type="text"
-                      placeholder="Link Google Drive foto 3..."
+                      placeholder="Google Drive link for photo 3..."
                       value={settingsForm.aboutPhoto3 || ''}
                       onChange={(e) => setSettingsForm({ ...settingsForm, aboutPhoto3: e.target.value })}
                       style={{
@@ -1376,6 +1537,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <img
                         src={parseGoogleDriveLink(settingsForm.aboutPhoto3).directUrl}
                         alt="About Photo 3 Preview"
+                        referrerPolicy="no-referrer"
                         style={{
                           width: '100%',
                           height: '120px',
@@ -1409,17 +1571,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </h4>
                 </div>
                 <p style={{ fontSize: '0.78125rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.5 }}>
-                  Kelola 5 foto yang tampil di pita Instagram baris bawah website. Masukkan <strong>Link Google Drive publik</strong> untuk masing-masing slot. Jika slot dikosongkan, sistem secara cerdas akan mengambil 5 foto portofolio terbaru yang Anda upload di CMS. Tidak ada gambar hardcode.
+                  Manage the 5 photos displayed in the Instagram strip at the bottom of the website. Enter a <strong>public Google Drive link</strong> for each slot. If a slot is left empty, the system will automatically pull the 5 most recent portfolio photos you uploaded via CMS. No hardcoded images.
                 </p>
 
                 {/* Custom Title */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Judul Banner Instagram
+                    Instagram Banner Title
                   </label>
                   <input
                     type="text"
-                    placeholder="Contoh: FOLLOW MY JOURNEY ON INSTAGRAM"
+                    placeholder="e.g. FOLLOW MY JOURNEY ON INSTAGRAM"
                     value={settingsForm.instagramTitle || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, instagramTitle: e.target.value })}
                     style={{
@@ -1483,6 +1645,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                             <img
                               src={previewUrl}
                               alt={`IG Slot ${num}`}
+                              referrerPolicy="no-referrer"
                               style={{
                                 width: '100%',
                                 height: '70px',
@@ -1566,21 +1729,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
             position: 'fixed',
             bottom: '24px',
             right: '24px',
-            backgroundColor: '#18181B',
+            backgroundColor: toast.type === 'error' ? '#1E0A0A' : '#18181B',
             color: '#FFFFFF',
             padding: '14px 20px',
             borderRadius: '8px',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
+            boxShadow: toast.type === 'error'
+              ? '0 10px 30px rgba(220, 38, 38, 0.3)'
+              : '0 10px 30px rgba(0, 0, 0, 0.25)',
             display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
+            alignItems: 'flex-start',
+            gap: '12px',
             zIndex: 9999,
+            border: toast.type === 'error'
+              ? '1px solid rgba(220, 38, 38, 0.4)'
+              : '1px solid rgba(255,255,255,0.06)',
+            maxWidth: '380px',
           }}
         >
-          <CheckCircle size={18} color="var(--accent-gold)" />
+          {toast.type === 'error'
+            ? <AlertCircle size={18} color="#EF4444" style={{ flexShrink: 0, marginTop: '1px' }} />
+            : <CheckCircle size={18} color="var(--accent-gold)" style={{ flexShrink: 0, marginTop: '1px' }} />
+          }
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{toast.title}</div>
-            <div style={{ fontSize: '0.75rem', color: '#A1A1AA' }}>{toast.message}</div>
+            <div style={{ fontWeight: 700, fontSize: '0.875rem', color: toast.type === 'error' ? '#FCA5A5' : '#FFFFFF' }}>
+              {toast.title.replace('❌ ', '')}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: toast.type === 'error' ? '#F87171' : '#A1A1AA', marginTop: '2px', lineHeight: 1.4 }}>
+              {toast.message}
+            </div>
           </div>
         </div>
       )}

@@ -3,29 +3,26 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { WorkGallery } from './components/WorkGallery';
 import { AboutStory } from './components/AboutStory';
-import { LatestStories } from './components/LatestStories';
 import { InstagramStrip } from './components/InstagramStrip';
 import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { LightboxModal } from './components/LightboxModal';
-import { StoryReaderModal } from './components/StoryReaderModal';
 import { SearchModal } from './components/SearchModal';
 import { Toast } from './components/Toast';
 import { AdminPage } from './pages/AdminPage';
 import { api } from './api/client';
 
-import type { Photo, Story, ToastMessage, SiteSettings } from './types';
+import type { Photo, ToastMessage, SiteSettings } from './types';
 
 export const App: React.FC = () => {
   const [pathname, setPathname] = useState<string>(() => window.location.pathname);
   const [activeSection, setActiveSection] = useState('home');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [stories, setStories] = useState<Story[]>([]);
   const [_settings, setSettings] = useState<SiteSettings | null>(null);
 
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -47,7 +44,7 @@ export const App: React.FC = () => {
   // ScrollSpy to sync active link in navigation
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'portfolio', 'about', 'blog', 'contact'];
+      const sections = ['home', 'portfolio', 'about', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -67,31 +64,39 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch dynamic content from CMS SQLite backend on mount
+  // Fetch dynamic content from CMS PostgreSQL backend on mount
   const fetchData = useCallback(async () => {
     try {
-      const [fetchedPhotos, fetchedStories, fetchedSettings] = await Promise.all([
+      setIsLoading(true);
+      const [fetchedPhotos, fetchedSettings] = await Promise.all([
         api.getPhotos(),
-        api.getStories(),
         api.getSettings(),
       ]);
       if (fetchedPhotos) {
         setPhotos(fetchedPhotos);
       }
-      if (fetchedStories) {
-        setStories(fetchedStories);
-      }
       if (fetchedSettings) {
         setSettings(fetchedSettings);
       }
     } catch (err) {
-      console.warn('Backend offline or API error, using static fallback content:', err);
+      console.warn('Backend API connection notice:', err);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Dynamically update document title from CMS Settings
+  useEffect(() => {
+    if (_settings?.fullName) {
+      document.title = `${_settings.fullName.toUpperCase()} — Street Photography`;
+    } else if (_settings?.brandName) {
+      document.title = `${_settings.brandName.toUpperCase()} — Street Photography`;
+    }
+  }, [_settings]);
 
   const showToast = (title: string, message: string) => {
     const id = Date.now().toString();
@@ -120,26 +125,21 @@ export const App: React.FC = () => {
     const foundPhoto = photos.find((p) => p.imageUrl === imageUrl) || {
       id: 'ig-preview',
       title: 'INSTAGRAM DISPATCH',
-      subtitle: '@amdqeis__',
+      subtitle: _settings?.instagram || (_settings?.brandName ? `@${_settings.brandName}` : '@amdkey'),
       imageUrl,
       aspectRatio: 'square',
-      location: 'Global Field Assignment',
-      year: '2024',
+      location: 'Bandung, Indonesia',
+      year: new Date().getFullYear().toString(),
       exif: {
-        camera: 'Sony Alpha 1',
-        lens: 'FE 24-70mm f/2.8 GM II',
+        camera: 'Sony A6400',
+        lens: 'Sony E 35mm f/1.8 OSS',
         aperture: 'f/2.8',
-        shutterSpeed: '1/1000s',
-        iso: '160',
+        shutterSpeed: '1/500s',
+        iso: '400',
         focalLength: '35mm',
       },
     };
     handleOpenPhoto(foundPhoto, 0);
-  };
-
-  const handleShareStory = (title: string) => {
-    navigator.clipboard?.writeText(window.location.href);
-    showToast('Link Copied', `"${title}" link copied to clipboard.`);
   };
 
   return (
@@ -149,6 +149,7 @@ export const App: React.FC = () => {
         onOpenSearch={() => setIsSearchOpen(true)}
         activeSection={activeSection}
         settings={_settings}
+        isLoading={isLoading}
       />
 
       <main>
@@ -156,12 +157,13 @@ export const App: React.FC = () => {
         <Hero
           heroImageUrl={_settings?.heroImageUrl}
           settings={_settings}
+          isLoading={isLoading}
           onViewPortfolio={() => {
             const el = document.getElementById('portfolio');
             el?.scrollIntoView({ behavior: 'smooth' });
           }}
           onReadStories={() => {
-            const el = document.getElementById('blog');
+            const el = document.getElementById('about');
             el?.scrollIntoView({ behavior: 'smooth' });
           }}
         />
@@ -169,6 +171,7 @@ export const App: React.FC = () => {
         {/* 2. Explore My Work Gallery - Adaptive (supports photo-only or photo + caption) */}
         <WorkGallery
           photos={photos}
+          isLoading={isLoading}
           onSelectPhoto={handleOpenPhoto}
         />
 
@@ -178,25 +181,21 @@ export const App: React.FC = () => {
           photo2={_settings?.aboutPhoto2}
           photo3={_settings?.aboutPhoto3}
           settings={_settings}
+          isLoading={isLoading}
         />
 
-        {/* 4. Latest Stories / Journal Grid */}
-        <LatestStories
-          stories={stories}
-          onSelectStory={(story) => setSelectedStory(story)}
-        />
-
-        {/* 5. Instagram Showcase Band */}
+        {/* 4. Instagram Showcase Band */}
         <InstagramStrip
           photos={photos}
           settings={_settings}
+          isLoading={isLoading}
           onPhotoClick={handleInstagramPhotoClick}
         />
 
-        {/* 6. Newsletter Subscription */}
+        {/* 5. Contact / Collaboration Section */}
         <Newsletter
           onSubscribeSuccess={(email) => {
-            showToast('Subscribed!', `Welcome aboard. Updates will be sent to ${email}`);
+            showToast('Sent!', `Message from ${email} received. Thank you!`);
           }}
         />
       </main>
@@ -213,21 +212,15 @@ export const App: React.FC = () => {
         onNavigate={handleNavigatePhoto}
       />
 
-      {/* Article Story Reading Drawer */}
-      <StoryReaderModal
-        story={selectedStory}
-        onClose={() => setSelectedStory(null)}
-        onShare={handleShareStory}
-      />
 
       {/* Quick Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         photos={photos}
-        stories={stories}
+        stories={[]}
         onSelectPhoto={handleOpenPhoto}
-        onSelectStory={(story) => setSelectedStory(story)}
+        onSelectStory={() => {}}
       />
 
       {/* Tactile Feedback Toasts */}

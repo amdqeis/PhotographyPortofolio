@@ -8,12 +8,14 @@ interface NavbarProps {
   onOpenSearch: () => void;
   activeSection: string;
   settings?: SiteSettings | null;
+  isLoading?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenSearch,
   activeSection,
   settings,
+  isLoading,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -55,9 +57,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems = [
     { label: 'HOME', href: '#home', id: 'home' },
-    { label: 'PORTFOLIO', href: '#portfolio', id: 'portfolio' },
+    { label: 'GALLERY', href: '#portfolio', id: 'portfolio' },
     { label: 'ABOUT', href: '#about', id: 'about' },
-    { label: 'BLOG', href: '#blog', id: 'blog' },
     { label: 'CONTACT', href: '#contact', id: 'contact' },
   ];
 
@@ -134,18 +135,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               userSelect: 'none',
             }}
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 800,
-                fontSize: '0.9375rem',
-                letterSpacing: '0.06em',
-                color: 'var(--text-primary)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {settings?.brandName || 'AHAD QEIS'}
-            </span>
+            {isLoading || !settings?.brandName ? (
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '90px',
+                  height: '16px',
+                  borderRadius: '4px',
+                  background: 'linear-gradient(90deg, rgba(229,169,30,0.08) 0%, rgba(229,169,30,0.2) 50%, rgba(229,169,30,0.08) 100%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.5s infinite',
+                }}
+              />
+            ) : (
+              <span
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 800,
+                  fontSize: '0.9375rem',
+                  letterSpacing: '0.06em',
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {settings.brandName}
+              </span>
+            )}
             <span
               style={{
                 width: '5px',
@@ -244,28 +259,30 @@ export const Navbar: React.FC<NavbarProps> = ({
             </motion.button>
 
             {/* Instagram Profile Link */}
-            <motion.a
-              href={settings?.instagramUrl || 'https://instagram.com/amdqeis__'}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Visit Instagram profile ${settings?.instagram || '@amdqeis__'}`}
-              title={`Instagram ${settings?.instagram || '@amdqeis__'}`}
-              whileHover={{ scale: 1.08, backgroundColor: 'rgba(24, 24, 27, 0.06)' }}
-              whileTap={{ scale: 0.94 }}
-              style={{
-                color: 'var(--text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '36px',
-                height: '36px',
-                borderRadius: '9999px',
-                textDecoration: 'none',
-              }}
-              className="desktop-only"
-            >
-              <InstagramIcon size={16} />
-            </motion.a>
+            {settings?.instagram && (
+              <motion.a
+                href={settings.instagramUrl || `https://instagram.com/${settings.instagram.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit Instagram profile ${settings.instagram}`}
+                title={`Instagram ${settings.instagram}`}
+                whileHover={{ scale: 1.08, backgroundColor: 'rgba(24, 24, 27, 0.06)' }}
+                whileTap={{ scale: 0.94 }}
+                style={{
+                  color: 'var(--text-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '9999px',
+                  textDecoration: 'none',
+                }}
+                className="desktop-only"
+              >
+                <InstagramIcon size={16} />
+              </motion.a>
+            )}
 
             {/* Mobile Menu Toggle Button */}
             <motion.button
@@ -347,34 +364,36 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {item.label}
                 </a>
               ))}
-              <div
-                style={{
-                  marginTop: 'var(--space-3)',
-                  paddingTop: 'var(--space-4)',
-                  borderTop: '1px solid var(--border-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <a
-                  href={settings?.instagramUrl || 'https://instagram.com/amdqeis__'}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {settings?.instagram && (
+                <div
                   style={{
-                    display: 'inline-flex',
+                    marginTop: 'var(--space-3)',
+                    paddingTop: 'var(--space-4)',
+                    borderTop: '1px solid var(--border-subtle)',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '0.875rem',
-                    fontWeight: 600,
-                    color: 'var(--text-secondary)',
-                    textDecoration: 'none',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <InstagramIcon size={16} /> {settings?.instagram || '@amdqeis__'}
-                </a>
-              </div>
+                  <a
+                    href={settings.instagramUrl || `https://instagram.com/${settings.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      color: 'var(--text-secondary)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <InstagramIcon size={16} /> {settings.instagram}
+                  </a>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

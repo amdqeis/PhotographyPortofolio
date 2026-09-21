@@ -57,16 +57,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>(
     settings || {
-      fullName: 'Ahad Qeis Ismail',
-      brandName: 'AHAD QEIS',
-      tagline: 'CAPTURING REAL MOMENTS',
-      eyebrow: "HEY, I'M AHAD QEIS",
-      bio: "Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people.",
-      email: 'ahmad.qeis122@gmail.com',
-      phone: '081934193454',
-      instagram: '@amdqeis__',
-      instagramUrl: 'https://instagram.com/amdqeis__',
-      location: 'Indonesia',
+      fullName: '',
+      brandName: '',
+      tagline: '',
+      eyebrow: '',
+      bio: '',
+      email: '',
+      phone: '',
+      instagram: '',
+      instagramUrl: '',
+      location: '',
       heroImageUrl: '',
       aboutPhoto1: '',
       aboutPhoto2: '',
@@ -199,7 +199,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 Content Management System
               </span>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                Ahad Qeis Studio CMS
+                {settings?.fullName ? `${settings.fullName} Studio CMS` : (settings?.brandName ? `${settings.brandName} Studio CMS` : 'Studio CMS')}
               </h2>
             </div>
           </div>
@@ -344,6 +344,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <img
                           src={photo.imageUrl}
                           alt={photo.title || 'Portfolio item'}
+                          referrerPolicy="no-referrer"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                         <div
@@ -472,6 +473,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <img
                       src={story.coverImage}
                       alt={story.title}
+                      referrerPolicy="no-referrer"
                       style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '4px' }}
                     />
                     <div style={{ flex: 1 }}>
@@ -626,7 +628,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   Website Editorial & Profile Imagery (Google Drive Links)
                 </h4>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-                  Semua foto website dikontrol lewat link Google Drive publik tanpa disimpan di disk server.
+                  All website images are managed via public Google Drive links without storing files on disk.
                 </p>
 
                 {/* Hero Image */}
@@ -636,7 +638,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="Link Google Drive foto latar Hero..."
+                    placeholder="Google Drive link for Hero background..."
                     value={settingsForm.heroImageUrl || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, heroImageUrl: e.target.value })}
                     style={{ width: '100%', height: '38px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', fontSize: '0.8125rem' }}
@@ -645,6 +647,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <img
                       src={parseGoogleDriveLink(settingsForm.heroImageUrl).directUrl}
                       alt="Hero preview"
+                      referrerPolicy="no-referrer"
                       style={{ width: '100px', height: '56px', objectFit: 'cover', borderRadius: '4px', marginTop: '6px' }}
                       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                     />

@@ -1,10 +1,13 @@
 import React from 'react';
 import { ArrowRight, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { StoriesSkeleton } from './SkeletonLoader';
+import { SmoothImage } from './SmoothImage';
 import type { Story } from '../types';
 
 interface LatestStoriesProps {
   stories: Story[];
+  isLoading?: boolean;
   onSelectStory: (story: Story) => void;
 }
 
@@ -31,7 +34,7 @@ const storyCardVariants = {
   },
 };
 
-export const LatestStories: React.FC<LatestStoriesProps> = ({ stories, onSelectStory }) => {
+export const LatestStories: React.FC<LatestStoriesProps> = ({ stories, onSelectStory, isLoading }) => {
   return (
     <section
       id="blog"
@@ -80,7 +83,9 @@ export const LatestStories: React.FC<LatestStoriesProps> = ({ stories, onSelectS
           )}
         </motion.div>
 
-        {stories.length === 0 ? (
+        {isLoading ? (
+          <StoriesSkeleton />
+        ) : stories.length === 0 ? (
           <div
             style={{
               textAlign: 'center',
@@ -148,7 +153,7 @@ export const LatestStories: React.FC<LatestStoriesProps> = ({ stories, onSelectS
                 }
               }}
             >
-              {/* Image Container */}
+              {/* Image Container with Progressive Fade-in */}
               <div
                 style={{
                   height: '190px',
@@ -158,17 +163,15 @@ export const LatestStories: React.FC<LatestStoriesProps> = ({ stories, onSelectS
                   backgroundColor: 'var(--surface-subtle)',
                 }}
               >
-                <img
+                <SmoothImage
                   src={story.coverImage}
                   alt={story.title}
-                  loading="lazy"
+                  className="story-card-img"
                   style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    transition: 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
-                  className="story-card-img"
                 />
               </div>
 

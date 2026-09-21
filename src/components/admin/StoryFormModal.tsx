@@ -262,7 +262,7 @@ export const StoryFormModal: React.FC<StoryFormModalProps> = ({
               {/* Live Image Preview */}
               {previewUrl && (
                 <div style={{ height: '140px', borderRadius: '4px', overflow: 'hidden', backgroundColor: '#18181B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src={previewUrl} alt="Cover preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  <img src={previewUrl} alt="Cover preview" referrerPolicy="no-referrer" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                 </div>
               )}
 

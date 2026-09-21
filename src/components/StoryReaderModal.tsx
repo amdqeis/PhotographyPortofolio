@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react';
 import { X, Clock, Calendar, MapPin, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Story } from '../types';
+import type { Story, SiteSettings } from '../types';
 
 interface StoryReaderModalProps {
   story: Story | null;
   onClose: () => void;
   onShare: (title: string) => void;
+  settings?: SiteSettings | null;
 }
 
 export const StoryReaderModal: React.FC<StoryReaderModalProps> = ({
   story,
   onClose,
   onShare,
+  settings,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -103,6 +105,7 @@ export const StoryReaderModal: React.FC<StoryReaderModalProps> = ({
               <img
                 src={story.coverImage}
                 alt={story.title}
+                referrerPolicy="no-referrer"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -260,16 +263,18 @@ export const StoryReaderModal: React.FC<StoryReaderModalProps> = ({
                   }}
                 >
                   "{story.quote}"
-                  <footer
-                    style={{
-                      marginTop: 'var(--space-2)',
-                      fontFamily: 'var(--font-script)',
-                      fontSize: '1.5rem',
-                      color: 'var(--accent-gold-dark)',
-                    }}
-                  >
-                    — Ahad Qeis
-                  </footer>
+                  {(settings?.fullName || settings?.brandName) && (
+                    <footer
+                      style={{
+                        marginTop: 'var(--space-2)',
+                        fontFamily: 'var(--font-script)',
+                        fontSize: '1.5rem',
+                        color: 'var(--accent-gold-dark)',
+                      }}
+                    >
+                      — {settings.fullName || settings.brandName}
+                    </footer>
+                  )}
                 </blockquote>
               )}
             </div>

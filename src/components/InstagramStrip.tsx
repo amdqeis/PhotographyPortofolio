@@ -1,16 +1,19 @@
 import React from 'react';
-import { Heart, Camera } from 'lucide-react';
+import { Maximize2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { InstagramIcon } from './Icons';
+import { InstagramSkeleton } from './SkeletonLoader';
+import { SmoothImage } from './SmoothImage';
 import type { Photo, SiteSettings } from '../types';
 
 interface InstagramStripProps {
   onPhotoClick: (imageUrl: string) => void;
   photos?: Photo[];
   settings?: SiteSettings | null;
+  isLoading?: boolean;
 }
 
-export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, photos, settings }) => {
+export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, photos, settings, isLoading }) => {
   // 1. Dedicated Instagram Photos configured in CMS Settings (igPhoto1..5)
   const dedicatedIgPhotos = [
     settings?.igPhoto1,
@@ -20,7 +23,7 @@ export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, ph
     settings?.igPhoto5,
   ].filter((url): url is string => Boolean(url && url.trim()));
 
-  // 2. Fall back to CMS portfolio photos, or empty array (NO hardcoded Unsplash fallback)
+  // 2. Fall back to CMS portfolio photos, or empty array (NO hardcoded placeholders)
   const displayPhotos: { id: string; imageUrl: string; likes: string }[] =
     dedicatedIgPhotos.length > 0
       ? dedicatedIgPhotos.map((url, i) => ({
@@ -36,10 +39,10 @@ export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, ph
         }))
       : [];
 
-  const instagramHandle = settings?.instagram || '@amdqeis__';
+  const instagramHandle = settings?.instagram || (settings?.brandName ? `@${settings.brandName}` : '');
   const cleanHandle = instagramHandle.replace('@', '');
-  const instagramUrl = settings?.instagramUrl || `https://instagram.com/${cleanHandle}`;
-  const instagramTitle = settings?.instagramTitle || 'FOLLOW MY JOURNEY\nON INSTAGRAM';
+  const instagramUrl = settings?.instagramUrl || (cleanHandle ? `https://instagram.com/${cleanHandle}` : 'https://instagram.com');
+  const instagramTitle = settings?.instagramTitle || 'FIND MY WORK\nON INSTAGRAM';
 
   return (
     <section
@@ -168,7 +171,9 @@ export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, ph
           }}
           className="instagram-photos-grid"
         >
-          {displayPhotos.length > 0 ? (
+          {isLoading ? (
+            <InstagramSkeleton />
+          ) : displayPhotos.length > 0 ? (
             displayPhotos.map((item) => (
               <motion.div
                 key={item.id}
@@ -185,70 +190,37 @@ export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, ph
                 }}
                 className="ig-thumb"
               >
-                <img
+                <SmoothImage
                   src={item.imageUrl}
                   alt="Instagram feed preview"
-                  loading="lazy"
+                  className="ig-thumb-img"
                   style={{
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
-                    transition: 'transform var(--transition-base)',
                   }}
-                  className="ig-thumb-img"
                 />
 
-                {/* Hover Likes Overlay */}
+                {/* Hover Expand Icon Overlay */}
                 <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '4px',
                     color: '#FFFFFF',
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
                     opacity: 0,
                     transition: 'opacity var(--transition-fast)',
                   }}
                   className="ig-thumb-overlay"
                 >
-                  <Heart size={14} fill="#FFFFFF" />
-                  <span>{item.likes}</span>
+                  <Maximize2 size={16} strokeWidth={2} />
                 </div>
               </motion.div>
             ))
-          ) : (
-            /* Aesthetic Placeholder Frames when no photos are uploaded yet (Zero Hardcoded Unsplash) */
-            [1, 2, 3, 4, 5].map((slot) => (
-              <div
-                key={slot}
-                style={{
-                  height: '110px',
-                  borderRadius: 'var(--radius-xs)',
-                  border: '1.5px dashed var(--border-medium)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  color: 'var(--text-tertiary)',
-                  padding: '8px',
-                  textAlign: 'center',
-                }}
-              >
-                <Camera size={18} strokeWidth={1.5} />
-                <span style={{ fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.04em' }}>
-                  Feed Slot {slot}
-                </span>
-              </div>
-            ))
-          )}
+          ) : null}
         </motion.div>
       </div>
 

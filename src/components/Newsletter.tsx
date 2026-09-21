@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, CheckCircle2 } from 'lucide-react';
+import { Camera, CheckCircle2, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NewsletterProps {
@@ -52,7 +52,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
           }}
           className="newsletter-card-wrap"
         >
-          {/* Left Info with Circle Mail Icon */}
+          {/* Left Info */}
           <div
             style={{
               display: 'flex',
@@ -77,7 +77,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                 flexShrink: 0,
               }}
             >
-              <Mail size={22} strokeWidth={1.8} />
+              <Camera size={22} strokeWidth={1.8} />
             </motion.div>
 
             <div>
@@ -92,7 +92,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                   marginBottom: '2px',
                 }}
               >
-                STAY INSPIRED
+                LET'S COLLABORATE
               </h3>
               <p
                 style={{
@@ -102,7 +102,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                   lineHeight: 1.45,
                 }}
               >
-                Get photography tips, behind the scenes and travel stories straight to your inbox.
+                Open to photo collaborations, events, or just a conversation about photography.
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                   }}
                 >
                   <CheckCircle2 size={18} />
-                  <span>You're on the list! Watch your inbox soon.</span>
+                  <span>Message sent! I'll get back to you soon.</span>
                 </motion.div>
               ) : (
                 <motion.form
@@ -152,7 +152,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                       setEmail(e.target.value);
                       if (error) setError('');
                     }}
-                    placeholder="Your email address"
+                    placeholder="Your email"
                     aria-label="Email address"
                     style={{
                       flex: 1,
@@ -177,7 +177,7 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                     whileTap={{ scale: 0.97 }}
                     style={{
                       height: '46px',
-                      padding: '0 24px',
+                      padding: '0 20px',
                       backgroundColor: 'var(--accent-gold)',
                       color: '#111215',
                       fontFamily: 'var(--font-display)',
@@ -189,9 +189,13 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                       border: 'none',
                       cursor: 'pointer',
                       flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
                     }}
                   >
-                    SUBSCRIBE
+                    SEND
+                    <ArrowRight size={14} strokeWidth={2.5} />
                   </motion.button>
                 </motion.form>
               )}
