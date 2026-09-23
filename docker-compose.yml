@@ -1,63 +1,20 @@
 services:
-  # ──────────────────────────────────────────────
-  # PostgreSQL Database
-  # ──────────────────────────────────────────────
-  db:
-    image: postgres:16-alpine
-    container_name: portfolio_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
-      POSTGRES_DB: ${PGDATABASE:-webportofolio}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"          # only needed for local DB GUI access
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-webportofolio}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ──────────────────────────────────────────────
-  # Portfolio App (Express API + Vite static build)
-  # ──────────────────────────────────────────────
-  app:
+  webportfolio:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: portfolio_app
+    container_name: webportofolio
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
+    networks:
+      - caddy_net
+    env_file:
+      - .env
     environment:
-      NODE_ENV: production
-      PORT: 3001
-
-      # PostgreSQL — points to the 'db' service above
-      PGHOST: db
-      PGPORT: 5432
-      PGUSER: ${PGUSER:-postgres}
-      PGPASSWORD: ${PGPASSWORD:-postgres}
-      PGDATABASE: ${PGDATABASE:-webportofolio}
-
-      # Auth
-      CMS_ADMIN_PASSWORD: ${CMS_ADMIN_PASSWORD:-change_me_in_production}
-      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
-    ports:
-      - "${APP_PORT:-3001}:3001"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      start_period: 30s
-      retries: 3
-
-volumes:
-  postgres_data:
-    driver: local
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    expose:
+      - "3000"
 
 networks:
   caddy_net:

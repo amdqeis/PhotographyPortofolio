@@ -14,8 +14,8 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenSearch,
   activeSection,
-  settings,
-  isLoading,
+  settings: _settings,
+  isLoading: _isLoading,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);

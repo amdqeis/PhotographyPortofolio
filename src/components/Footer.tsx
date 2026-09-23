@@ -7,7 +7,7 @@ interface FooterProps {
   settings?: SiteSettings | null;
 }
 
-export const Footer: React.FC<FooterProps> = ({ settings }) => {
+export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
   return (
     <footer
       id="contact"
