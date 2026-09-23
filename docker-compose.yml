@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: webportofolio
+    container_name: photographyportfolio
     restart: unless-stopped
     networks:
       - caddy_net
