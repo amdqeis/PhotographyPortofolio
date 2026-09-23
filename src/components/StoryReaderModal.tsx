@@ -14,7 +14,7 @@ export const StoryReaderModal: React.FC<StoryReaderModalProps> = ({
   story,
   onClose,
   onShare,
-  settings,
+  settings: _settings,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -263,18 +263,16 @@ export const StoryReaderModal: React.FC<StoryReaderModalProps> = ({
                   }}
                 >
                   "{story.quote}"
-                  {(settings?.fullName || settings?.brandName) && (
-                    <footer
-                      style={{
-                        marginTop: 'var(--space-2)',
-                        fontFamily: 'var(--font-script)',
-                        fontSize: '1.5rem',
-                        color: 'var(--accent-gold-dark)',
-                      }}
-                    >
-                      — {settings.fullName || settings.brandName}
-                    </footer>
-                  )}
+                  <footer
+                    style={{
+                      marginTop: 'var(--space-2)',
+                      fontFamily: 'var(--font-script)',
+                      fontSize: '1.5rem',
+                      color: 'var(--accent-gold-dark)',
+                    }}
+                  >
+                    — Ahmad Qeis
+                  </footer>
                 </blockquote>
               )}
             </div>

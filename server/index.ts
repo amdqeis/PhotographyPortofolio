@@ -8,6 +8,7 @@ import { handleLogin } from './auth';
 import { photosRouter } from './routes/photos';
 import { storiesRouter } from './routes/stories';
 import { settingsRouter } from './routes/settings';
+import { contactRouter } from './routes/contact';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +42,7 @@ app.post('/api/auth/login', handleLogin);
 app.use('/api/photos', photosRouter);
 app.use('/api/stories', storiesRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/contact', contactRouter);
 
 // ── Production: serve the Vite-built frontend ──────────────────────────────
 if (isProd) {

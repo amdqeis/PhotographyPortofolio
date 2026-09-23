@@ -57,20 +57,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>(
     settings || {
-      fullName: '',
       brandName: '',
-      tagline: '',
-      eyebrow: '',
-      bio: '',
-      email: '',
-      phone: '',
-      instagram: '',
-      instagramUrl: '',
-      location: '',
       heroImageUrl: '',
       aboutPhoto1: '',
       aboutPhoto2: '',
       aboutPhoto3: '',
+      igPhoto1: '',
+      igPhoto2: '',
+      igPhoto3: '',
+      igPhoto4: '',
+      igPhoto5: '',
     }
   );
 
@@ -199,7 +195,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 Content Management System
               </span>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                {settings?.fullName ? `${settings.fullName} Studio CMS` : (settings?.brandName ? `${settings.brandName} Studio CMS` : 'Studio CMS')}
+                {'STUDIO CMS'}
               </h2>
             </div>
           </div>
@@ -526,103 +522,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {activeTab === 'settings' && (
             <form onSubmit={handleSaveSettings} style={{ maxWidth: '640px', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '2px' }}>Photographer Profile & Site Info</h3>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '2px' }}>Image Management</h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                  Update identity details, contact numbers, and social channels.
+                  Kelola gambar website — hero background, foto about, dan foto instagram strip. Informasi personal sudah ditentukan di kode.
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={settingsForm.fullName}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, fullName: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Brand Name (Header)
-                  </label>
-                  <input
-                    type="text"
-                    value={settingsForm.brandName}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, brandName: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Contact Email
-                  </label>
-                  <input
-                    type="email"
-                    value={settingsForm.email}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, email: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Phone / WhatsApp Number
-                  </label>
-                  <input
-                    type="text"
-                    value={settingsForm.phone}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Instagram Handle
-                  </label>
-                  <input
-                    type="text"
-                    value={settingsForm.instagram}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, instagram: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    value={settingsForm.location}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, location: e.target.value })}
-                    style={{ width: '100%', height: '40px', padding: '0 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)' }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                  Artist Bio Narrative
-                </label>
-                <textarea
-                  value={settingsForm.bio}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, bio: e.target.value })}
-                  rows={4}
-                  style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', fontFamily: 'inherit' }}
-                />
-              </div>
-
               {/* Section Images */}
+
               <div style={{ marginTop: 'var(--space-2)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-subtle)' }}>
                 <h4 style={{ fontSize: '0.9375rem', fontWeight: 800, marginBottom: '4px' }}>
                   Website Editorial & Profile Imagery (Google Drive Links)

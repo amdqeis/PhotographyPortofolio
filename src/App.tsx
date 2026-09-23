@@ -2,27 +2,31 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { WorkGallery } from './components/WorkGallery';
+import { LatestStories } from './components/LatestStories';
 import { AboutStory } from './components/AboutStory';
 import { InstagramStrip } from './components/InstagramStrip';
 import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { LightboxModal } from './components/LightboxModal';
+import { StoryReaderModal } from './components/StoryReaderModal';
 import { SearchModal } from './components/SearchModal';
 import { Toast } from './components/Toast';
 import { AdminPage } from './pages/AdminPage';
 import { api } from './api/client';
 
-import type { Photo, ToastMessage, SiteSettings } from './types';
+import type { Photo, ToastMessage, SiteSettings, Story } from './types';
 
 export const App: React.FC = () => {
   const [pathname, setPathname] = useState<string>(() => window.location.pathname);
   const [activeSection, setActiveSection] = useState('home');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [stories, setStories] = useState<Story[]>([]);
   const [_settings, setSettings] = useState<SiteSettings | null>(null);
 
   const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [activeStory, setActiveStory] = useState<Story | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -44,7 +48,7 @@ export const App: React.FC = () => {
   // ScrollSpy to sync active link in navigation
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'portfolio', 'about', 'contact'];
+      const sections = ['home', 'portfolio', 'blog', 'about', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -64,22 +68,26 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch dynamic content from CMS PostgreSQL backend on mount
+  // Fetch dynamic content from CMS backend on mount
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [fetchedPhotos, fetchedSettings] = await Promise.all([
+      const [fetchedPhotos, fetchedStories, fetchedSettings] = await Promise.all([
         api.getPhotos(),
+        api.getStories(),
         api.getSettings(),
       ]);
       if (fetchedPhotos) {
         setPhotos(fetchedPhotos);
       }
+      if (fetchedStories) {
+        setStories(fetchedStories);
+      }
       if (fetchedSettings) {
         setSettings(fetchedSettings);
       }
     } catch (err) {
-      console.warn('Backend API connection notice:', err);
+      console.error('[App] Gagal mengambil data dari backend:', err);
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +99,7 @@ export const App: React.FC = () => {
 
   // Dynamically update document title from CMS Settings
   useEffect(() => {
-    if (_settings?.fullName) {
-      document.title = `${_settings.fullName.toUpperCase()} — Street Photography`;
-    } else if (_settings?.brandName) {
-      document.title = `${_settings.brandName.toUpperCase()} — Street Photography`;
-    }
+    document.title = `${_settings?.brandName?.toUpperCase() || 'AMDKEY'} — Photography Portfolio`;
   }, [_settings]);
 
   const showToast = (title: string, message: string) => {
@@ -125,7 +129,7 @@ export const App: React.FC = () => {
     const foundPhoto = photos.find((p) => p.imageUrl === imageUrl) || {
       id: 'ig-preview',
       title: 'INSTAGRAM DISPATCH',
-      subtitle: _settings?.instagram || (_settings?.brandName ? `@${_settings.brandName}` : '@amdkey'),
+      subtitle: '@amdqeis__',
       imageUrl,
       aspectRatio: 'square',
       location: 'Bandung, Indonesia',
@@ -163,7 +167,7 @@ export const App: React.FC = () => {
             el?.scrollIntoView({ behavior: 'smooth' });
           }}
           onReadStories={() => {
-            const el = document.getElementById('about');
+            const el = document.getElementById('blog');
             el?.scrollIntoView({ behavior: 'smooth' });
           }}
         />
@@ -175,7 +179,14 @@ export const App: React.FC = () => {
           onSelectPhoto={handleOpenPhoto}
         />
 
-        {/* 3. About Me Storyteller Collage */}
+        {/* 3. Latest Stories Section */}
+        <LatestStories
+          stories={stories}
+          isLoading={isLoading}
+          onSelectStory={(story) => setActiveStory(story)}
+        />
+
+        {/* 4. About Me Storyteller Collage */}
         <AboutStory
           photo1={_settings?.aboutPhoto1}
           photo2={_settings?.aboutPhoto2}
@@ -184,7 +195,7 @@ export const App: React.FC = () => {
           isLoading={isLoading}
         />
 
-        {/* 4. Instagram Showcase Band */}
+        {/* 5. Instagram Showcase Band */}
         <InstagramStrip
           photos={photos}
           settings={_settings}
@@ -192,7 +203,7 @@ export const App: React.FC = () => {
           onPhotoClick={handleInstagramPhotoClick}
         />
 
-        {/* 5. Contact / Collaboration Section */}
+        {/* 6. Contact / Collaboration Section */}
         <Newsletter
           onSubscribeSuccess={(email) => {
             showToast('Sent!', `Message from ${email} received. Thank you!`);
@@ -200,7 +211,7 @@ export const App: React.FC = () => {
         />
       </main>
 
-      {/* 7. Comprehensive Footer (Clean, no admin buttons) */}
+      {/* Footer */}
       <Footer settings={_settings} />
 
       {/* Lightbox Modal with EXIF Data */}
@@ -212,15 +223,28 @@ export const App: React.FC = () => {
         onNavigate={handleNavigatePhoto}
       />
 
+      {/* Story Reader Modal */}
+      <StoryReaderModal
+        story={activeStory}
+        onClose={() => setActiveStory(null)}
+        onShare={(title) => {
+          navigator.clipboard?.writeText(`${window.location.origin} — "${title}"`);
+          showToast('Copied!', 'Article link copied to clipboard.');
+        }}
+        settings={_settings}
+      />
 
       {/* Quick Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         photos={photos}
-        stories={[]}
+        stories={stories}
         onSelectPhoto={handleOpenPhoto}
-        onSelectStory={() => {}}
+        onSelectStory={(story) => {
+          setActiveStory(story);
+          setIsSearchOpen(false);
+        }}
       />
 
       {/* Tactile Feedback Toasts */}

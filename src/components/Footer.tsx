@@ -203,7 +203,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
               {[
                 {
                   icon: InstagramIcon,
-                  href: settings?.instagramUrl || (settings?.instagram ? `https://instagram.com/${settings.instagram.replace('@', '')}` : 'https://instagram.com'),
+                  href: 'https://instagram.com/amdqeis__',
                   label: 'Instagram',
                 },
                 { icon: YoutubeIcon, href: 'https://youtube.com', label: 'YouTube' },
@@ -246,68 +246,60 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
 
             {/* Email, Phone & Location */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem' }}>
-              {settings?.email && (
-                <a
-                  href={`mailto:${settings.email}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: 'var(--text-secondary)',
-                    transition: 'color var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                >
-                  <Mail size={14} color="var(--accent-gold-dark)" />
-                  <span>{settings.email}</span>
-                </a>
-              )}
+              <a
+                href="mailto:ahmad.qeis122@gmail.com"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--text-secondary)',
+                  transition: 'color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
+                <Mail size={14} color="var(--accent-gold-dark)" />
+                <span>ahmad.qeis122@gmail.com</span>
+              </a>
 
-              {settings?.phone && (
-                <a
-                  href={`tel:${settings.phone}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: 'var(--text-secondary)',
-                    transition: 'color var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                >
-                  <Phone size={14} color="var(--accent-gold-dark)" />
-                  <span>{settings.phone.startsWith('0') ? `+62 ${settings.phone.slice(1)}` : settings.phone}</span>
-                </a>
-              )}
+              <a
+                href="tel:081934193454"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--text-secondary)',
+                  transition: 'color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
+                <Phone size={14} color="var(--accent-gold-dark)" />
+                <span>+62 81934193454</span>
+              </a>
 
-              {settings?.instagram && (
-                <a
-                  href={settings.instagramUrl || `https://instagram.com/${settings.instagram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: 'var(--text-secondary)',
-                    transition: 'color var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                >
-                  <InstagramIcon size={14} color="var(--accent-gold-dark)" />
-                  <span>{settings.instagram}</span>
-                </a>
-              )}
+              <a
+                href="https://instagram.com/amdqeis__"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--text-secondary)',
+                  transition: 'color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-gold-dark)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
+                <InstagramIcon size={14} color="var(--accent-gold-dark)" />
+                <span>@amdqeis__</span>
+              </a>
 
-              {settings?.location && (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
-                  <MapPin size={14} />
-                  <span>{settings.location}</span>
-                </div>
-              )}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
+                <MapPin size={14} />
+                <span>Bandung, Indonesia</span>
+              </div>
             </div>
           </div>
         </div>
@@ -327,7 +319,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
           }}
         >
           <div>
-            © {new Date().getFullYear()} {settings?.fullName ? settings.fullName.toUpperCase() : (settings?.brandName ? settings.brandName.toUpperCase() : '')}. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} AHMAD QEIS ISMAIL. ALL RIGHTS RESERVED.
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
             <a href="#home" style={{ textDecoration: 'underline' }}>Privacy Policy</a>

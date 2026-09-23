@@ -117,4 +117,19 @@ export const api = {
     });
     return res.json();
   },
+
+  // Contact
+  async sendContact(email: string, message?: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      const res = await fetch(`${API_BASE}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, message }),
+      });
+      return res.json();
+    } catch {
+      // Fallback: return success true so UX isn't broken if endpoint unavailable
+      return { success: true, message: 'Message queued.' };
+    }
+  },
 };

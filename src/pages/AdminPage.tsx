@@ -49,29 +49,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>({
-    fullName: '',
     brandName: '',
-    tagline: '',
-    eyebrow: '',
-    bio: '',
-    email: '',
-    phone: '',
-    instagram: '',
-    instagramUrl: '',
-    location: '',
     heroImageUrl: '',
     aboutPhoto1: '',
     aboutPhoto2: '',
     aboutPhoto3: '',
-    instagramTitle: '',
     igPhoto1: '',
     igPhoto2: '',
     igPhoto3: '',
     igPhoto4: '',
     igPhoto5: '',
-    statYears: '',
-    statCountries: '',
-    statAwards: '',
   });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
@@ -100,7 +87,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         setSettingsForm(st);
       }
     } catch {
-      showToast('Offline Mode', 'Could not load live backend data.');
+      showToast('Error', 'Gagal terhubung ke server. Pastikan backend berjalan dan database aktif.');
     } finally {
       setIsLoadingData(false);
     }
@@ -343,7 +330,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: '#FFFFFF',
               }}
             >
-              {_settings?.brandName || _settings?.fullName || 'STUDIO CMS'}
+              {_settings?.brandName || 'STUDIO CMS'}
             </h1>
             <p
               style={{
@@ -466,7 +453,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               color: '#71717A',
             }}
           >
-            {_settings?.fullName ? `${_settings.fullName} Content Management System` : 'Portfolio Content Management System'}
+            {'Portfolio CMS — Image Management'}
           </div>
         </motion.div>
       </div>
@@ -512,7 +499,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: 'var(--text-primary)',
               }}
             >
-              {_settings?.brandName || _settings?.fullName || 'STUDIO CMS'}
+              {'STUDIO CMS'}
             </div>
             <div
               style={{
@@ -1022,252 +1009,30 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 marginBottom: '24px',
               }}
             >
-              Identity & Contact Configuration
+              Image Management
             </h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={settingsForm.fullName}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, fullName: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Brand Title
-                </label>
-                <input
-                  type="text"
-                  value={settingsForm.brandName}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, brandName: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Hero Eyebrow Text
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. HEY, I'M AHMAD QEIS"
-                  value={settingsForm.eyebrow || ''}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, eyebrow: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Hero Tagline / Headline
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. CAPTURING REAL MOMENTS"
-                  value={settingsForm.tagline || ''}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, tagline: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={settingsForm.email}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Phone / WhatsApp
-                </label>
-                <input
-                  type="text"
-                  value={settingsForm.phone}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Instagram Handle
-                </label>
-                <input
-                  type="text"
-                  value={settingsForm.instagram}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, instagram: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                  Location / Region
-                </label>
-                <input
-                  type="text"
-                  value={settingsForm.location}
-                  onChange={(e) => setSettingsForm({ ...settingsForm, location: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-medium)',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>
-                Artist Biography
-              </label>
-              <textarea
-                rows={4}
-                value={settingsForm.bio}
-                onChange={(e) => setSettingsForm({ ...settingsForm, bio: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '12px 14px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-medium)',
-                  fontFamily: 'inherit',
-                  lineHeight: 1.5,
-                }}
-              />
-            </div>
-
-            {/* Photographer Stats — from DB, displayed in About section */}
+            {/* IMAGE SETTINGS ONLY — personal info is hardcoded in components */}
             <div
               style={{
                 marginBottom: '28px',
-                backgroundColor: 'rgba(229, 169, 30, 0.06)',
-                border: '1px solid rgba(229, 169, 30, 0.2)',
-                borderRadius: '10px',
-                padding: '18px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <CheckCircle size={18} color="var(--accent-gold-dark)" />
-                <h4 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '0.9375rem', margin: 0, color: 'var(--text-primary)' }}>
-                  Photographer Stats (About Section)
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.5 }}>
-                Data ini tampil di section <strong>About</strong> homepage. Isi sesuai pengalaman dan pencapaian nyata — diambil langsung dari database.
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
-                    Years Experience
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 12+"
-                    value={settingsForm.statYears || ''}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, statYears: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-medium)',
-                      fontSize: '0.875rem',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
-                    Countries Explored
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 28"
-                    value={settingsForm.statCountries || ''}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, statCountries: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-medium)',
-                      fontSize: '0.875rem',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', color: 'var(--text-secondary)' }}>
-                    Awards Won
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 100+"
-                    value={settingsForm.statAwards || ''}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, statAwards: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-medium)',
-                      fontSize: '0.875rem',
-                    }}
-                  />
-                </div>
+              <div
+                style={{
+                  backgroundColor: 'rgba(229, 169, 30, 0.08)',
+                  border: '1px solid rgba(229, 169, 30, 0.25)',
+                  borderRadius: '10px',
+                  padding: '14px 18px',
+                  marginBottom: '24px',
+                  fontSize: '0.8125rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.5,
+                }}
+              >
+                <strong style={{ color: 'var(--text-primary)' }}>Image Management Only:</strong> Tab ini hanya untuk mengelola gambar — hero, foto profil about, dan foto Instagram strip. Informasi personal (nama, bio, kontak) sudah ditentukan langsung di kode aplikasi.
               </div>
             </div>
-
-            {/* EDITORIAL & SECTION IMAGERY (CMS DRIVEN) */}
             <div
               style={{
                 marginTop: '32px',
@@ -1574,26 +1339,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   Manage the 5 photos displayed in the Instagram strip at the bottom of the website. Enter a <strong>public Google Drive link</strong> for each slot. If a slot is left empty, the system will automatically pull the 5 most recent portfolio photos you uploaded via CMS. No hardcoded images.
                 </p>
 
-                {/* Custom Title */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '4px' }}>
-                    Instagram Banner Title
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. FOLLOW MY JOURNEY ON INSTAGRAM"
-                    value={settingsForm.instagramTitle || ''}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, instagramTitle: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-medium)',
-                      backgroundColor: '#FFFFFF',
-                      fontSize: '0.8125rem',
-                    }}
-                  />
-                </div>
 
                 {/* 5 Instagram Photos Inputs Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>

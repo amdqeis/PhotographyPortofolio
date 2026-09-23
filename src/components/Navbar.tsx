@@ -259,30 +259,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </motion.button>
 
             {/* Instagram Profile Link */}
-            {settings?.instagram && (
-              <motion.a
-                href={settings.instagramUrl || `https://instagram.com/${settings.instagram.replace('@', '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Visit Instagram profile ${settings.instagram}`}
-                title={`Instagram ${settings.instagram}`}
-                whileHover={{ scale: 1.08, backgroundColor: 'rgba(24, 24, 27, 0.06)' }}
-                whileTap={{ scale: 0.94 }}
-                style={{
-                  color: 'var(--text-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '9999px',
-                  textDecoration: 'none',
-                }}
-                className="desktop-only"
-              >
-                <InstagramIcon size={16} />
-              </motion.a>
-            )}
+            <motion.a
+              href="https://instagram.com/amdqeis__"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit Instagram profile @amdqeis__"
+              title="Instagram @amdqeis__"
+              whileHover={{ scale: 1.08, backgroundColor: 'rgba(24, 24, 27, 0.06)' }}
+              whileTap={{ scale: 0.94 }}
+              style={{
+                color: 'var(--text-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '36px',
+                height: '36px',
+                borderRadius: '9999px',
+                textDecoration: 'none',
+              }}
+              className="desktop-only"
+            >
+              <InstagramIcon size={16} />
+            </motion.a>
 
             {/* Mobile Menu Toggle Button */}
             <motion.button
@@ -364,36 +362,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {item.label}
                 </a>
               ))}
-              {settings?.instagram && (
-                <div
+              <div
+                style={{
+                  marginTop: 'var(--space-3)',
+                  paddingTop: 'var(--space-4)',
+                  borderTop: '1px solid var(--border-subtle)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <a
+                  href="https://instagram.com/amdqeis__"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
-                    marginTop: 'var(--space-3)',
-                    paddingTop: 'var(--space-4)',
-                    borderTop: '1px solid var(--border-subtle)',
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    gap: '8px',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    color: 'var(--text-secondary)',
+                    textDecoration: 'none',
                   }}
                 >
-                  <a
-                    href={settings.instagramUrl || `https://instagram.com/${settings.instagram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      color: 'var(--text-secondary)',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    <InstagramIcon size={16} /> {settings.instagram}
-                  </a>
-                </div>
-              )}
+                  <InstagramIcon size={16} /> @amdqeis__
+                </a>
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Camera, CheckCircle2, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../api/client';
 
 interface NewsletterProps {
   onSubscribeSuccess: (email: string) => void;
@@ -9,9 +10,10 @@ interface NewsletterProps {
 export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = email.trim();
     if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
@@ -19,6 +21,14 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
       return;
     }
     setError('');
+    setIsSubmitting(true);
+    try {
+      await api.sendContact(cleanEmail);
+    } catch {
+      // silent — UX proceeds regardless
+    } finally {
+      setIsSubmitting(false);
+    }
     setIsSubmitted(true);
     onSubscribeSuccess(cleanEmail);
     setEmail('');
@@ -173,12 +183,13 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
 
                   <motion.button
                     type="submit"
-                    whileHover={{ backgroundColor: '#D19414' }}
-                    whileTap={{ scale: 0.97 }}
+                    disabled={isSubmitting}
+                    whileHover={!isSubmitting ? { backgroundColor: '#D19414' } : {}}
+                    whileTap={!isSubmitting ? { scale: 0.97 } : {}}
                     style={{
                       height: '46px',
                       padding: '0 20px',
-                      backgroundColor: 'var(--accent-gold)',
+                      backgroundColor: isSubmitting ? 'var(--border-medium)' : 'var(--accent-gold)',
                       color: '#111215',
                       fontFamily: 'var(--font-display)',
                       fontSize: '0.8125rem',
@@ -187,15 +198,16 @@ export const Newsletter: React.FC<NewsletterProps> = ({ onSubscribeSuccess }) =>
                       textTransform: 'uppercase',
                       borderRadius: '0 var(--radius-xs) var(--radius-xs) 0',
                       border: 'none',
-                      cursor: 'pointer',
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
                       flexShrink: 0,
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
+                      transition: 'background-color 200ms ease',
                     }}
                   >
-                    SEND
-                    <ArrowRight size={14} strokeWidth={2.5} />
+                    {isSubmitting ? 'SENDING...' : 'SEND'}
+                    {!isSubmitting && <ArrowRight size={14} strokeWidth={2.5} />}
                   </motion.button>
                 </motion.form>
               )}

@@ -318,7 +318,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              {settings?.fullName || ''}
+              Ahmad Qeis
             </motion.div>
           </div>
 
@@ -357,23 +357,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                 marginBottom: 'var(--space-2)',
               }}
             >
-              {isLoading ? (
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: '240px',
-                    height: '36px',
-                    borderRadius: '6px',
-                    background: 'linear-gradient(90deg, rgba(229,169,30,0.08) 0%, rgba(229,169,30,0.2) 50%, rgba(229,169,30,0.08) 100%)',
-                    backgroundSize: '200% 100%',
-                    animation: 'shimmer 1.5s infinite',
-                  }}
-                />
-              ) : settings?.fullName ? (
-                `HI, I'M ${settings.fullName.toUpperCase()}`
-              ) : (
-                'ABOUT THE ARTIST'
-              )}
+              {"HI, I'M AHMAD QEIS"}
             </h2>
 
             {/* Subtle Divider Line */}
@@ -399,7 +383,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                 marginBottom: 'var(--space-8)',
               }}
             >
-              {settings?.bio || ''}
+              {"Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people."}
             </p>
 
             {/* 3 Metric Counters — 100% from DB settings (statYears, statCountries, statAwards) */}
@@ -407,19 +391,19 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               const dbStats = [
                 {
                   id: 'stat-exp',
-                  value: settings?.statYears || '—',
+                  value: '7+',
                   label: 'Years Shooting',
                   icon: 'camera' as const,
                 },
                 {
                   id: 'stat-countries',
-                  value: settings?.statCountries || '—',
+                  value: '120+',
                   label: 'Photos in Portfolio',
                   icon: 'globe' as const,
                 },
                 {
                   id: 'stat-awards',
-                  value: settings?.statAwards || '—',
+                  value: '50+',
                   label: 'Projects Done',
                   icon: 'award' as const,
                 },
@@ -592,11 +576,11 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   marginBottom: 'var(--space-4)',
                 }}
               >
-                {settings?.fullName ? `The Frame of ${settings.fullName}` : 'The Frame'}
+                'The Frame of Ahmad Qeis'
               </h3>
 
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-4)' }}>
-                {settings?.bio || 'Capturing the unscripted moments of Bandung streets and beyond. The best frame happens in a fraction of a second — honest expressions, light that forms itself, and moments that will never repeat.'}
+                {'Capturing the unscripted moments of Bandung streets and beyond. The best frame happens in a fraction of a second — honest expressions, light that forms itself, and moments that will never repeat.'}
               </p>
 
               <h4

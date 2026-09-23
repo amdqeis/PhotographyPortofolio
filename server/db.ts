@@ -194,22 +194,9 @@ export async function initDatabase() {
       }
 
       if (!migratedFromSqlite) {
-        // Default portfolio settings (seeded with ON CONFLICT DO NOTHING to never overwrite user data)
+        // Default settings — only brandName and image slots (all personal info is hardcoded in components)
         const defaultSettings: Record<string, string> = {
-          fullName: 'Ahmad Qeis Ismail',
           brandName: 'amdkey',
-          tagline: 'CAPTURING REAL MOMENTS',
-          eyebrow: "HEY, I'M AHMAD QEIS",
-          bio: "Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people.",
-          email: 'ahmad.qeis122@gmail.com',
-          phone: '081934193454',
-          instagram: '@amdqeis__',
-          instagramUrl: 'https://instagram.com/amdqeis__',
-          location: 'Indonesia',
-          statYears: '12+',
-          statCountries: '28',
-          statAwards: '14+',
-          instagramTitle: 'FOLLOW MY JOURNEY\nON INSTAGRAM',
           aboutPhoto1: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85',
           aboutPhoto2: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=85',
           aboutPhoto3: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=85',
@@ -218,30 +205,19 @@ export async function initDatabase() {
         for (const [k, v] of Object.entries(defaultSettings)) {
           await pool.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
         }
-        console.log('[PostgreSQL] Default portfolio settings seeded.');
+        console.log('[PostgreSQL] Default image settings seeded.');
       }
     } else {
-      // Ensure any newly added settings keys exist even if settings already had some rows
-      const additionalSettings: Record<string, string> = {
-        statYears: '12+',
-        statCountries: '28',
-        statAwards: '14+',
-        instagramTitle: 'FOLLOW MY JOURNEY\nON INSTAGRAM',
+      // Ensure image setting keys exist even if settings already had some rows
+      const imageSettings: Record<string, string> = {
         aboutPhoto1: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85',
         aboutPhoto2: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=85',
         aboutPhoto3: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=85',
       };
-      for (const [k, v] of Object.entries(additionalSettings)) {
+      for (const [k, v] of Object.entries(imageSettings)) {
         await pool.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
       }
     }
-
-    // 2b. Sanitize any legacy hardcoded typo in settings
-    await pool.query(`
-      UPDATE settings 
-      SET value = 'HEY, I''M AHMAD QEIS' 
-      WHERE key = 'eyebrow' AND value LIKE '%AHAD%';
-    `);
 
     // 3. Ensure stories table is seeded if currently empty
     const storiesCheck = await pool.query('SELECT COUNT(*) as count FROM stories');

@@ -39,10 +39,9 @@ export const InstagramStrip: React.FC<InstagramStripProps> = ({ onPhotoClick, ph
         }))
       : [];
 
-  const instagramHandle = settings?.instagram || (settings?.brandName ? `@${settings.brandName}` : '');
-  const cleanHandle = instagramHandle.replace('@', '');
-  const instagramUrl = settings?.instagramUrl || (cleanHandle ? `https://instagram.com/${cleanHandle}` : 'https://instagram.com');
-  const instagramTitle = settings?.instagramTitle || 'FIND MY WORK\nON INSTAGRAM';
+  const instagramHandle = '@amdqeis__';
+  const instagramUrl = 'https://instagram.com/amdqeis__';
+  const instagramTitle = 'FOLLOW MY JOURNEY\nON INSTAGRAM';
 
   return (
     <section

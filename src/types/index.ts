@@ -44,17 +44,7 @@ export interface PhotographerStat {
 }
 
 export interface SiteSettings {
-  fullName: string;
   brandName: string;
-  tagline: string;
-  eyebrow: string;
-  bio: string;
-  email: string;
-  phone: string;
-  instagram: string;
-  instagramUrl: string;
-  instagramTitle?: string;
-  location: string;
   heroImageUrl?: string;
   aboutPhoto1?: string;
   aboutPhoto2?: string;
@@ -64,9 +54,6 @@ export interface SiteSettings {
   igPhoto3?: string;
   igPhoto4?: string;
   igPhoto5?: string;
-  statYears?: string;
-  statCountries?: string;
-  statAwards?: string;
 }
 
 export interface ToastMessage {
