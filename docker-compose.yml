@@ -58,3 +58,7 @@ services:
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  caddy_net:
+    external: true
