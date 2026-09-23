@@ -38,10 +38,15 @@ settingsRouter.put('/', requireAuth, async (req: Request, res: Response) => {
       'igPhoto5',
     ];
 
+    // Keys that must not be stored in DB (hardcoded in frontend)
+    const blockedKeys = ['brandName'];
+
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
       for (const [key, value] of Object.entries(updates)) {
+        // Skip keys that are hardcoded in the frontend and must not be stored in DB
+        if (blockedKeys.includes(key)) continue;
         let finalValue = value ? String(value).trim() : '';
         // If it's an image key and contains a Drive link, resolve to direct stream URL
         if (imageKeys.includes(key) && finalValue) {

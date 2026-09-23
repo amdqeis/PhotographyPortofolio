@@ -49,7 +49,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>({
-    brandName: '',
     heroImageUrl: '',
     aboutPhoto1: '',
     aboutPhoto2: '',
@@ -330,7 +329,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: '#FFFFFF',
               }}
             >
-              {_settings?.brandName || 'STUDIO CMS'}
+              AMDKEY
             </h1>
             <p
               style={{

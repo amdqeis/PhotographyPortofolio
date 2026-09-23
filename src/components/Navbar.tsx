@@ -135,20 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               userSelect: 'none',
             }}
           >
-            {isLoading || !settings?.brandName ? (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '90px',
-                  height: '16px',
-                  borderRadius: '4px',
-                  background: 'linear-gradient(90deg, rgba(229,169,30,0.08) 0%, rgba(229,169,30,0.2) 50%, rgba(229,169,30,0.08) 100%)',
-                  backgroundSize: '200% 100%',
-                  animation: 'shimmer 1.5s infinite',
-                }}
-              />
-            ) : (
-              <span
+            <span
                 style={{
                   fontFamily: 'var(--font-display)',
                   fontWeight: 800,
@@ -158,9 +145,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   whiteSpace: 'nowrap',
                 }}
               >
-                {settings.brandName}
+                AMDKEY
               </span>
-            )}
             <span
               style={{
                 width: '5px',

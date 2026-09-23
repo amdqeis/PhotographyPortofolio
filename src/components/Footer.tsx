@@ -48,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
                   color: 'var(--text-primary)',
                 }}
               >
-                {settings?.brandName || ''}
+                AMDKEY
               </span>
               <span
                 style={{

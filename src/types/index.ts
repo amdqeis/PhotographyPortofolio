@@ -44,7 +44,6 @@ export interface PhotographerStat {
 }
 
 export interface SiteSettings {
-  brandName: string;
   heroImageUrl?: string;
   aboutPhoto1?: string;
   aboutPhoto2?: string;

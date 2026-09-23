@@ -99,7 +99,7 @@ export const App: React.FC = () => {
 
   // Dynamically update document title from CMS Settings
   useEffect(() => {
-    document.title = `${_settings?.brandName?.toUpperCase() || 'AMDKEY'} — Photography Portfolio`;
+    document.title = 'AMDKEY — Photography Portfolio';
   }, [_settings]);
 
   const showToast = (title: string, message: string) => {

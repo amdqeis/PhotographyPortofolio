@@ -57,7 +57,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Settings form state
   const [settingsForm, setSettingsForm] = useState<SiteSettings>(
     settings || {
-      brandName: '',
       heroImageUrl: '',
       aboutPhoto1: '',
       aboutPhoto2: '',

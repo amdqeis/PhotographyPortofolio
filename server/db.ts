@@ -138,6 +138,9 @@ export async function initDatabase() {
       );
     `);
 
+    // Cleanup: remove brandName from DB — it is now hardcoded in frontend components
+    await pool.query(`DELETE FROM settings WHERE key = 'brandName'`);
+
     // 2. Check if settings is empty, seed or migrate from SQLite
     const settingsCheck = await pool.query('SELECT COUNT(*) as count FROM settings');
     const count = parseInt(settingsCheck.rows[0]?.count || '0', 10);
@@ -194,9 +197,8 @@ export async function initDatabase() {
       }
 
       if (!migratedFromSqlite) {
-        // Default settings — only brandName and image slots (all personal info is hardcoded in components)
+        // Default settings — only image slots (brandName is hardcoded in frontend components)
         const defaultSettings: Record<string, string> = {
-          brandName: 'amdkey',
           aboutPhoto1: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85',
           aboutPhoto2: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=85',
           aboutPhoto3: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=85',
