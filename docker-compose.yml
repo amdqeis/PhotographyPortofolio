@@ -1,5 +1,5 @@
 services:
-  webportfolio:
+  photographyportfolio:
     build:
       context: .
       dockerfile: Dockerfile
