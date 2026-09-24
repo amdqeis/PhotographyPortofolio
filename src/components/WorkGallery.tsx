@@ -129,18 +129,13 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto,
             </p>
           </div>
         ) : (
-          /* Gallery Grid - Responsive Staggered Animation & Adaptive Captions */
+          /* Gallery Masonry - CSS Columns for natural aspect ratios */
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: 'var(--space-4)',
-            }}
-            className="portfolio-cards-grid"
+            className="portfolio-masonry-grid"
           >
           {photos.map((photo, index) => {
             const hasCaption = Boolean(photo.title || photo.subtitle);
@@ -154,7 +149,6 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto,
                 onClick={() => onSelectPhoto(photo, index)}
                 style={{
                   position: 'relative',
-                  height: '360px',
                   borderRadius: 'var(--radius-xs)',
                   overflow: 'hidden',
                   cursor: 'pointer',
@@ -171,15 +165,16 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto,
                   }
                 }}
               >
-                {/* Photo Image with Progressive Smooth Fade-in */}
+                {/* Photo Image - natural aspect ratio, no cropping */}
                 <SmoothImage
                   src={photo.imageUrl}
                   alt={photo.title || 'Portfolio Photography'}
                   className="gallery-card-img"
                   style={{
                     width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
+                    height: 'auto',
+                    objectFit: 'contain',
+                    display: 'block',
                   }}
                 />
 
@@ -310,25 +305,46 @@ export const WorkGallery: React.FC<WorkGalleryProps> = ({ photos, onSelectPhoto,
       </div>
 
       <style>{`
-        .portfolio-cards-grid {
-          grid-template-columns: repeat(6, 1fr);
+        /* Masonry layout using CSS columns */
+        .portfolio-masonry-grid {
+          columns: 4;
+          column-gap: var(--space-4, 16px);
+        }
+
+        .portfolio-masonry-grid > * {
+          break-inside: avoid;
+          margin-bottom: var(--space-4, 16px);
         }
 
         @media (max-width: 1200px) {
-          .portfolio-cards-grid {
-            grid-template-columns: repeat(3, 1fr);
+          .portfolio-masonry-grid {
+            columns: 3;
           }
         }
 
-        @media (max-width: 640px) {
-          .portfolio-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 768px) {
+          .portfolio-masonry-grid {
+            columns: 2;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .portfolio-masonry-grid {
+            columns: 2;
+            column-gap: var(--space-2, 8px);
+          }
+          .portfolio-masonry-grid > * {
+            margin-bottom: var(--space-2, 8px);
           }
         }
 
         .gallery-card:hover .gallery-card-img {
-          transform: scale(1.08);
+          transform: scale(1.04);
           filter: contrast(1.05);
+        }
+
+        .gallery-card .gallery-card-img {
+          transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .gallery-card:hover .gallery-hover-icon {

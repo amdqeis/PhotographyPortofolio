@@ -39,6 +39,37 @@ photosRouter.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+// PUT reorder photos (protected) — batch update sort_order for all photos
+photosRouter.put('/reorder', requireAuth, async (req: Request, res: Response) => {
+  try {
+    await ensureInitialized();
+    const { order } = req.body; // [{id: string, sortOrder: number}, ...]
+
+    if (!Array.isArray(order) || order.length === 0) {
+      res.status(400).json({ success: false, message: 'Invalid order payload. Expected array of {id, sortOrder}.' });
+      return;
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const item of order) {
+        await client.query('UPDATE photos SET sort_order = $1 WHERE id = $2', [item.sortOrder, item.id]);
+      }
+      await client.query('COMMIT');
+    } catch (txErr) {
+      await client.query('ROLLBACK');
+      throw txErr;
+    } finally {
+      client.release();
+    }
+
+    res.json({ success: true, message: 'Photo order updated successfully' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Failed to reorder photos' });
+  }
+});
+
 // POST new photo (protected)
 photosRouter.post('/', requireAuth, async (req: Request, res: Response) => {
   try {

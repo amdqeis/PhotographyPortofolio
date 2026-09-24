@@ -65,6 +65,15 @@ export const api = {
     return res.json();
   },
 
+  async reorderPhotos(order: { id: string; sortOrder: number }[]): Promise<{ success: boolean; message?: string }> {
+    const res = await fetch(`${API_BASE}/photos/reorder`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ order }),
+    });
+    return res.json();
+  },
+
   // Stories
   async getStories(): Promise<Story[]> {
     const res = await fetch(`${API_BASE}/stories`);

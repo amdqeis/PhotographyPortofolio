@@ -15,8 +15,26 @@ import {
   Globe,
   CheckCircle,
   AlertCircle,
+  GripVertical,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { PhotoFormModal } from '../components/admin/PhotoFormModal';
 import { StoryFormModal } from '../components/admin/StoryFormModal';
 import { api } from '../api/client';
@@ -26,6 +44,178 @@ import type { Photo, Story, SiteSettings } from '../types';
 interface AdminPageProps {
   onNavigate: (path: string) => void;
 }
+
+/* ——— Sortable Photo Card (drag-and-drop item) ——— */
+interface SortablePhotoCardProps {
+  photo: Photo;
+  index: number;
+  onEdit: (photo: Photo) => void;
+  onDelete: (id: string) => void;
+}
+
+const SortablePhotoCard: React.FC<SortablePhotoCardProps> = ({ photo, index, onEdit, onDelete }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: photo.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 'auto',
+    opacity: isDragging ? 0.85 : 1,
+  };
+
+  const isPhotoOnly = !photo.title && !photo.subtitle;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        border: isDragging ? '2px solid var(--accent-gold)' : '1px solid var(--border-medium)',
+        boxShadow: isDragging ? '0 12px 32px rgba(229, 169, 30, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
+        display: 'flex',
+        alignItems: 'stretch',
+      }}
+    >
+      {/* Drag Handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '48px',
+          minWidth: '48px',
+          backgroundColor: isDragging ? 'rgba(229, 169, 30, 0.12)' : 'var(--surface-subtle)',
+          borderRight: '1px solid var(--border-subtle)',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          flexDirection: 'column',
+          gap: '4px',
+          touchAction: 'none',
+        }}
+      >
+        <GripVertical size={18} color={isDragging ? 'var(--accent-gold)' : '#A1A1AA'} />
+        <span
+          style={{
+            fontSize: '0.625rem',
+            fontWeight: 800,
+            color: isDragging ? 'var(--accent-gold-dark)' : '#A1A1AA',
+            letterSpacing: '0.04em',
+          }}
+        >
+          {index + 1}
+        </span>
+      </div>
+
+      {/* Thumbnail */}
+      <div style={{ width: '88px', minWidth: '88px', backgroundColor: '#EAE6DF', position: 'relative' }}>
+        <img
+          src={photo.imageUrl}
+          alt={photo.title || 'Portfolio item'}
+          referrerPolicy="no-referrer"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+        {photo.driveFileId && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '4px',
+              left: '4px',
+              backgroundColor: 'rgba(16, 185, 129, 0.85)',
+              color: '#FFFFFF',
+              padding: '1px 5px',
+              borderRadius: '3px',
+              fontSize: '0.5625rem',
+              fontWeight: 700,
+            }}
+          >
+            Drive
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div style={{ flex: 1, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', minWidth: 0 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              color: isPhotoOnly ? 'var(--text-muted)' : 'var(--text-primary)',
+              fontStyle: isPhotoOnly ? 'italic' : 'normal',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {photo.title || 'Untitled Photo (No Caption)'}
+          </div>
+          {photo.subtitle && (
+            <div style={{ fontSize: '0.6875rem', color: 'var(--accent-gold-dark)', marginTop: '1px' }}>
+              {photo.subtitle}
+            </div>
+          )}
+          <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            {[photo.location, photo.year].filter(Boolean).join(' • ') || 'Location Unspecified'}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <button
+            type="button"
+            onClick={() => onEdit(photo)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border-medium)',
+              borderRadius: '6px',
+              padding: '5px 10px',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+            }}
+          >
+            <Edit2 size={12} /> Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(photo.id)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              borderRadius: '6px',
+              padding: '5px 10px',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              color: '#DC2626',
+              cursor: 'pointer',
+            }}
+          >
+            <Trash2 size={12} /> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => api.isAuthenticated());
@@ -170,6 +360,35 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       }
     }
   };
+
+  // Photo reorder handler (drag-and-drop)
+  const handleReorderPhotos = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = photos.findIndex((p) => p.id === active.id);
+    const newIndex = photos.findIndex((p) => p.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(photos, oldIndex, newIndex);
+    setPhotos(reordered);
+
+    // Persist new order to backend
+    try {
+      const order = reordered.map((p, i) => ({ id: p.id, sortOrder: i }));
+      const res = await api.reorderPhotos(order);
+      if (!res.success) throw new Error(res.message);
+      showToast('Order Saved', 'Photo gallery order updated.');
+    } catch (err: any) {
+      showToast('❌ Reorder Failed', err.message || 'Could not save the new order.');
+      await loadData(); // Revert to server state
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   // Story handlers
   const handleSaveStory = async (storyData: Partial<Story>) => {
@@ -719,7 +938,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
           )}
         </div>
 
-        {/* ----------------- TAB 1: PHOTOS ----------------- */}
+        {/* ----------------- TAB 1: PHOTOS (Drag-and-Drop Reorder) ----------------- */}
         {activeTab === 'photos' && (
           <div>
             <div
@@ -738,153 +957,31 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               sharing link. The server never saves image files on disk; photos stream through Google's direct CDN.
               Captions (title/subtitle) are <em>completely optional</em> — photos without captions render in a clean,
               borderless view.
+              <br />
+              <strong style={{ color: 'var(--text-primary)', marginTop: '4px', display: 'inline-block' }}>
+                <GripVertical size={13} style={{ verticalAlign: 'middle', marginRight: '2px' }} />
+                Drag to Reorder:
+              </strong> Drag the grip handle on the left to rearrange the gallery display order. Changes save automatically.
             </div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '24px',
-              }}
-            >
-              {photos.map((photo, index) => {
-                const isPhotoOnly = !photo.title && !photo.subtitle;
-                return (
-                  <div
-                    key={photo.id}
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                      border: '1px solid var(--border-medium)',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.04)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#EAE6DF' }}>
-                      <img
-                        src={photo.imageUrl}
-                        alt={photo.title || 'Portfolio item'}
-                        referrerPolicy="no-referrer"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '10px',
-                          left: '10px',
-                          backgroundColor: 'rgba(24, 24, 27, 0.75)',
-                          color: '#FFFFFF',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          fontSize: '0.6875rem',
-                          fontWeight: 700,
-                        }}
-                      >
-                        #{index + 1}
-                      </div>
-
-                      {photo.driveFileId && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '10px',
-                            right: '10px',
-                            backgroundColor: 'rgba(16, 185, 129, 0.85)',
-                            color: '#FFFFFF',
-                            padding: '3px 8px',
-                            borderRadius: '4px',
-                            fontSize: '0.625rem',
-                            fontWeight: 700,
-                          }}
-                        >
-                          Drive CDN
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <div style={{ marginBottom: '12px', flex: 1 }}>
-                        <div
-                          style={{
-                            fontFamily: 'var(--font-display)',
-                            fontWeight: 700,
-                            fontSize: '0.9375rem',
-                            color: isPhotoOnly ? 'var(--text-muted)' : 'var(--text-primary)',
-                            fontStyle: isPhotoOnly ? 'italic' : 'normal',
-                          }}
-                        >
-                          {photo.title || 'Untitled Photo (No Caption)'}
-                        </div>
-                        {photo.subtitle && (
-                          <div style={{ fontSize: '0.75rem', color: 'var(--accent-gold-dark)', marginTop: '2px' }}>
-                            {photo.subtitle}
-                          </div>
-                        )}
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                          {[photo.location, photo.year].filter(Boolean).join(' • ') || 'Location Unspecified'}
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'flex-end',
-                          gap: '8px',
-                          paddingTop: '12px',
-                          borderTop: '1px solid var(--border-subtle)',
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedPhotoToEdit(photo);
-                            setPhotoModalOpen(true);
-                          }}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            backgroundColor: 'var(--surface-subtle)',
-                            border: '1px solid var(--border-medium)',
-                            borderRadius: '6px',
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            color: 'var(--text-primary)',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <Edit2 size={13} /> Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDeletePhoto(photo.id)}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                            borderRadius: '6px',
-                            padding: '6px 12px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            color: '#DC2626',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <Trash2 size={13} /> Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleReorderPhotos}>
+              <SortableContext items={photos.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {photos.map((photo, index) => (
+                    <SortablePhotoCard
+                      key={photo.id}
+                      photo={photo}
+                      index={index}
+                      onEdit={(p) => {
+                        setSelectedPhotoToEdit(p);
+                        setPhotoModalOpen(true);
+                      }}
+                      onDelete={handleDeletePhoto}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         )}
 
