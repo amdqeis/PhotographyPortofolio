@@ -22,7 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.4fr 1fr 1fr 1fr 1.3fr',
+            gridTemplateColumns: '1.4fr 1fr 1fr 1.3fr',
             gap: 'var(--space-8)',
             marginBottom: 'var(--space-12)',
           }}
@@ -48,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
                   color: 'var(--text-primary)',
                 }}
               >
-                AMDKEY
+                portofolio
               </span>
               <span
                 style={{
@@ -73,7 +73,7 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
                 maxWidth: '260px',
               }}
             >
-              Documenting honest moments from the streets of Bandung — one frame at a time.
+              Documenting the unscripted moments of Bandung's streets, one frame at a time.
             </p>
           </div>
 
@@ -128,7 +128,7 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
               PORTFOLIO
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {['Street', 'Portrait', 'Urban', 'Candid', 'Documentary'].map((item) => (
+              {['Street', 'Human Interest', 'Nature', 'Candid'].map((item) => (
                 <li key={item}>
                   <a
                     href="#portfolio"
@@ -147,40 +147,6 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
             </ul>
           </div>
 
-          {/* Column 3: RESOURCES */}
-          <div>
-            <h4
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--text-primary)',
-                marginBottom: 'var(--space-4)',
-              }}
-            >
-              RESOURCES
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {['Gear & Setup', 'Behind The Scenes', 'Photo Walk Bandung', 'Collab & Project'].map((item) => (
-                <li key={item}>
-                  <a
-                    href="#contact"
-                    style={{
-                      fontSize: '0.8125rem',
-                      color: 'var(--text-secondary)',
-                      transition: 'color var(--transition-fast)',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-primary)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
 
           {/* Column 4: LET'S CONNECT */}
           <div>
@@ -319,12 +285,9 @@ export const Footer: React.FC<FooterProps> = ({ settings: _settings }) => {
           }}
         >
           <div>
-            © {new Date().getFullYear()} AHMAD QEIS ISMAIL. ALL RIGHTS RESERVED.
+            &copy; {new Date().getFullYear()} Ahmad Qeis. All rights reserved.
           </div>
-          <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
-            <a href="#home" style={{ textDecoration: 'underline' }}>Privacy Policy</a>
-            <a href="#home" style={{ textDecoration: 'underline' }}>Terms of Service</a>
-          </div>
+
         </div>
       </div>
 

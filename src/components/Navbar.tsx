@@ -145,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   whiteSpace: 'nowrap',
                 }}
               >
-                AMDKEY
+                portofolio
               </span>
             <span
               style={{

@@ -186,7 +186,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
                 color: 'var(--text-secondary)',
               }}
             >
-              HEY, I'M AHMAD QEIS
+              HI, I'M AHMAD QEIS
             </span>
           </motion.div>
 
@@ -203,7 +203,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               whiteSpace: 'pre-line',
             }}
           >
-            {'CAPTURING REAL\nMOMENTS'}
+            {'FINDING STORIES\nIN THE STREETS'}
           </motion.h1>
 
           {/* Narrative Subtitle */}
@@ -220,7 +220,7 @@ export const Hero: React.FC<HeroProps> = ({ onViewPortfolio, onReadStories, hero
               fontWeight: 400,
             }}
           >
-            {"Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people."}
+            {"Street, human interest, and nature photographer based in Bandung, Indonesia. I capture unscripted moments: the kind that happen in between, the ones that are easy to walk past but impossible to forget."}
           </motion.p>
 
           {/* Dual Action Buttons */}

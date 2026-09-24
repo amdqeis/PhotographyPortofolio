@@ -383,7 +383,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                 marginBottom: 'var(--space-8)',
               }}
             >
-              {"Photography found me years ago and it changed the way I see the world. It's more than taking pictures — it's about preserving memories, telling stories and connecting with people."}
+              {"Photographer based in Bandung, Indonesia. I work across street, human interest, and nature photography, drawn to moments that feel honest and unposed. Still learning, but always shooting."}
             </p>
 
             {/* 3 Metric Counters — 100% from DB settings (statYears, statCountries, statAwards) */}
@@ -391,20 +391,20 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
               const dbStats = [
                 {
                   id: 'stat-exp',
-                  value: '7+',
+                  value: '2',
                   label: 'Years Shooting',
                   icon: 'camera' as const,
                 },
                 {
                   id: 'stat-countries',
-                  value: '120+',
+                  value: '30+',
                   label: 'Photos in Portfolio',
                   icon: 'globe' as const,
                 },
                 {
                   id: 'stat-awards',
-                  value: '50+',
-                  label: 'Projects Done',
+                  value: '3',
+                  label: 'Projects Completed',
                   icon: 'award' as const,
                 },
               ];
@@ -566,7 +566,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   textTransform: 'uppercase',
                 }}
               >
-                Street Photographer — Bandung
+                Street, Human Interest + Nature Photography
               </span>
               <h3
                 style={{
@@ -576,11 +576,11 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
                   marginBottom: 'var(--space-4)',
                 }}
               >
-                'The Frame of Ahmad Qeis'
+                Behind the Lens: Ahmad Qeis
               </h3>
 
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 'var(--space-4)' }}>
-                {'Capturing the unscripted moments of Bandung streets and beyond. The best frame happens in a fraction of a second — honest expressions, light that forms itself, and moments that will never repeat.'}
+                {"I'm Ahmad Qeis, a photographer from Bandung, Indonesia. I started two years ago with a borrowed camera and no real plan. Along the way I found myself drawn to three things: the rawness of street life, the depth of human interest stories, and the stillness you only find in nature. I am still early in this journey, but every shot I take is something I genuinely care about."}
               </p>
 
               <h4
@@ -598,12 +598,12 @@ export const AboutStory: React.FC<AboutStoryProps> = ({ photo1, photo2, photo3, 
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
                 {[
-                  'Sony Alpha A6400 — Primary Body',
-                  'Sony E 35mm f/1.8 OSS — Street Staple',
+                  'Sony Alpha A6400 / Main Camera',
+                  'Sony E 35mm f/1.8 OSS / Go-To Lens',
                   'Sony E 18-135mm f/3.5-5.6 OSS',
-                  'Sony E 50mm f/1.8 OSS — Portrait',
-                  'Peak Design Clip — Run and Gun',
-                  'Lightroom Classic — Post Processing',
+                  'Sony E 50mm f/1.8 OSS / Portrait',
+                  'Peak Design Clip / Run and Gun',
+                  'Lightroom Classic / Post Processing',
                 ].map((gear, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                     <CheckCircle2 size={16} color="var(--accent-gold-dark)" />

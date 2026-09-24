@@ -548,7 +548,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 color: '#FFFFFF',
               }}
             >
-              AMDKEY
+              PORTOFOLIO
             </h1>
             <p
               style={{

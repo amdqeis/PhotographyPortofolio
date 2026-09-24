@@ -99,7 +99,7 @@ export const App: React.FC = () => {
 
   // Dynamically update document title from CMS Settings
   useEffect(() => {
-    document.title = 'AMDKEY — Photography Portfolio';
+    document.title = 'Ahmad Qeis — Street Photography Bandung';
   }, [_settings]);
 
   const showToast = (title: string, message: string) => {
@@ -180,11 +180,11 @@ export const App: React.FC = () => {
         />
 
         {/* 3. Latest Stories Section */}
-        <LatestStories
+        {/* <LatestStories
           stories={stories}
           isLoading={isLoading}
           onSelectStory={(story) => setActiveStory(story)}
-        />
+        /> */}
 
         {/* 4. About Me Storyteller Collage */}
         <AboutStory
