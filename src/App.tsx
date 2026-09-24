@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { WorkGallery } from './components/WorkGallery';
-import { LatestStories } from './components/LatestStories';
+// import { LatestStories } from './components/LatestStories';
 import { AboutStory } from './components/AboutStory';
 import { InstagramStrip } from './components/InstagramStrip';
 import { Newsletter } from './components/Newsletter';
